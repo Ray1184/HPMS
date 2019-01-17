@@ -77,7 +77,8 @@ namespace hpms
             buffer << file.rdbuf();
             file.close();
             return buffer.str();
-        } else {
+        } else
+        {
             std::stringstream ss;
             ss << "Cannot open/read file with name " << fileName;
             LOG_ERROR(ss.str().c_str());
@@ -96,6 +97,21 @@ namespace hpms
         ss << "[" << m[3][0] << "]" << "[" << m[3][1] << "]" << "[" << m[3][2] << "]" << "[" << m[3][3] << "]"
            << std::endl;
         return ss.str();
+    }
+
+    inline void RandomString(char* s, const int len)
+    {
+        static const char alphanum[] =
+                "0123456789"
+                        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                        "abcdefghijklmnopqrstuvwxyz";
+
+        for (int i = 0; i < len; ++i)
+        {
+            s[i] = alphanum[rand() % (sizeof(alphanum) - 1)];
+        }
+
+        s[len] = 0;
     }
 }
 

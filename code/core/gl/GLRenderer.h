@@ -4,6 +4,7 @@
 #pragma once
 
 #include "../Renderer.h"
+#include <glad/glad.h>
 #include <unordered_map>
 
 namespace hpms
@@ -16,11 +17,11 @@ namespace hpms
         {
             LOG_DEBUG("OpenGL rendering module created.");
         }
+
         void MeshInit(hpms::Mesh& mesh) override;
 
-        void ModelsDraw(Mesh& mesh, Texture* texture, std::vector<hpms::AdvModelItem*>& items,
-                        Transformation& t, Shader& s,
-                        std::function<void(AdvModelItem*, Transformation&, Shader&)> pipelineCallback) override;
+        void ModelsDraw(Mesh& mesh, Texture* texture, const AdvModelItem* currentItem, const std::unordered_map<const AdvModelItem*, std::vector<Entity*>>& itemsMap,
+                        Shader* s, std::function<void(const AdvModelItem*, Entity*, Shader*)> pipelineCallback) override;
 
         void MeshCleanup(hpms::Mesh& mesh) override;
 
@@ -32,7 +33,9 @@ namespace hpms
 
     private:
 
-        std::unordered_map<std::string, Texture> textureCache;
+        std::unordered_map<std::string, GLuint> vaoMap;
+
+        std::unordered_map<std::string, std::vector<GLuint>> vbosMap;
 
     };
 }

@@ -13,14 +13,16 @@ namespace hpms
     {
     public:
         Camera() : position(glm::vec3(0, 0, 0)),
-                   rotation(glm::vec3(0, 0, 0))
+                   rotation(glm::vec3(0, 0, 0)),
+                   viewMatrix(glm::mat4(1.0))
         {
 
         }
 
         Camera(glm::vec3& pposition, glm::vec3& protation) :
                 position(pposition),
-                rotation(protation)
+                rotation(protation),
+                viewMatrix(glm::mat4(1.0))
         {
 
         }
@@ -57,7 +59,9 @@ namespace hpms
 
         inline glm::mat4 UpdateViewMatrix()
         {
-            return hpms::Transformation::UpdateGenericViewMatrix(position, rotation, viewMatrix);
+            viewMatrix = glm::mat4(1.0);
+            viewMatrix = hpms::Transformation::UpdateGenericViewMatrix(position, rotation, viewMatrix);
+            return viewMatrix;
         }
 
     private:

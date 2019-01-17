@@ -8,14 +8,16 @@
 #include <unordered_map>
 #include <sstream>
 #include <glm/ext.hpp>
+#include <iostream>
 #include "../Shader.h"
 #include "../../common/Utils.h"
 #include "../Names.h"
 
+#define TRANSPOSE_MATRICES
 #ifndef TRANSPOSE_MATRICES
 #define TRANSPOSE GL_FALSE
 #else
-#define TRANSPOSE GL_TRUE
+#define TRANSPOSE GL_FALSE
 #endif
 
 namespace hpms

@@ -6,36 +6,25 @@
 
 #include <unordered_map>
 #include <vector>
+#include <string>
 #include "AdvModelItem.h"
 #include "Mesh.h"
+#include "Entity.h"
 
 namespace hpms
 {
     class Scene
     {
     public:
-        inline void AddModel(hpms::AdvModelItem* modelItem)
+        inline void AddEntity(Entity* entity)
         {
-            std::vector<hpms::Mesh> meshes = modelItem->GetMeshes();
-            for (hpms::Mesh mesh : meshes)
-            {
-
-                if (meshMap.find(mesh) == meshMap.end())
-                {
-                    std::vector<hpms::AdvModelItem*> models;
-                    models.push_back(modelItem);
-                    meshMap.insert({mesh, models});
-                } else
-                {
-                    meshMap[mesh].push_back(modelItem);
-                }
-            }
-
+            const AdvModelItem* model = entity->GetModelItem();
+            modelsMap[model].push_back(entity);
         }
 
-        inline const std::unordered_map<Mesh, std::vector<AdvModelItem*>, MeshHasher, MeshEqualFn>& GetMeshMap() const
+        const std::unordered_map<const AdvModelItem*, std::vector<Entity*>>& GetModelsMap() const
         {
-            return meshMap;
+            return modelsMap;
         }
 
         inline const glm::vec3& GetAmbientLight() const
@@ -43,13 +32,14 @@ namespace hpms
             return ambientLight;
         }
 
+
         inline void SetAmbientLight(const glm::vec3& ambientLight)
         {
             Scene::ambientLight = ambientLight;
         }
 
     private:
-        std::unordered_map<hpms::Mesh, std::vector<hpms::AdvModelItem*>, hpms::MeshHasher, hpms::MeshEqualFn> meshMap;
+        std::unordered_map<const hpms::AdvModelItem*, std::vector<Entity*>> modelsMap;
         glm::vec3 ambientLight;
     };
 }

@@ -34,7 +34,7 @@ int Serialize(std::string& modelPath, std::string& texPath, std::string& outPath
 {
     hpms::AdvModelItem* item = hpms::AssimpImporter::LoadModelItem(modelPath, texPath);
 
-    pods::ResizableOutputBuffer out;
+       pods::ResizableOutputBuffer out;
     pods::BinarySerializer<decltype(out)> serializer(out);
     if (serializer.save(*item) != pods::Error::NoError)
     {

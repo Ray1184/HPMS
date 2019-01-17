@@ -61,29 +61,20 @@ namespace hpms
                 1,
                 PODS_OPT(frames),
                 PODS_OPT(name),
-                PODS_OPT(duration),
-                PODS_OPT(currentFrameIndex),
-                PODS_OPT(play),
-                PODS_OPT(loop)
+                PODS_OPT(duration)
         );
 
 
         Animation() :
                 name(std::string()),
                 frames(0),
-                duration(0),
-                currentFrameIndex(0),
-                play(0),
-                loop(0)
+                duration(0)
         {}
 
         Animation(std::string pname, std::vector<Frame>& pframes, double pduration) :
                 name(pname),
                 frames(pframes),
-                duration(pduration),
-                currentFrameIndex(0),
-                play(0),
-                loop(0)
+                duration(pduration)
         {}
 
         inline const std::vector<Frame>& GetFrames() const
@@ -116,43 +107,12 @@ namespace hpms
             Animation::duration = duration;
         }
 
-        inline unsigned int GetCurrentFrameIndex() const
-        {
-            return currentFrameIndex;
-        }
 
-        inline void SetCurrentFrameIndex(unsigned int currentFrameIndex)
-        {
-            Animation::currentFrameIndex = currentFrameIndex;
-        }
-
-        inline bool IsPlay() const
-        {
-            return play;
-        }
-
-        inline void SetPlay(bool play)
-        {
-            Animation::play = play;
-        }
-
-        inline bool IsLoop() const
-        {
-            return loop;
-        }
-
-        inline void SetLoop(bool loop)
-        {
-            Animation::loop = loop;
-        }
 
     private:
         std::vector<Frame> frames;
         std::string name;
         double duration;
-        unsigned int currentFrameIndex;
-        int play;
-        int loop;
 
     };
 }

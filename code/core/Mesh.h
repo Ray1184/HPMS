@@ -4,8 +4,8 @@
 
 #pragma once
 
-#include <glad/glad.h>
 #include <vector>
+#include <string>
 #include "Material.h"
 #include <pods/pods.h>
 #include <pods/buffers.h>
@@ -30,11 +30,9 @@ namespace hpms
         Material material;
         std::string name;
         unsigned int vertexCount;
+        std::string key;
 
 
-        // Transient data.
-        unsigned int vaoId;
-        std::vector<unsigned int> vboList;
 
     public:
 
@@ -50,7 +48,8 @@ namespace hpms
                 PODS_OPT(textured),
                 PODS_OPT(material),
                 PODS_OPT(name),
-                PODS_OPT(vertexCount)
+                PODS_OPT(vertexCount),
+                PODS_OPT(key)
         )
 
         inline const std::vector<float>& GetPositions() const
@@ -113,27 +112,6 @@ namespace hpms
             Mesh::weights = weights;
         }
 
-
-        inline unsigned int GetVaoId() const
-        {
-            return vaoId;
-        }
-
-        inline void SetVaoId(unsigned int vaoId)
-        {
-            Mesh::vaoId = vaoId;
-        }
-
-        inline const std::vector<unsigned int>& GetVboList() const
-        {
-            return vboList;
-        }
-
-        inline void AddVbo(unsigned int vbo)
-        {
-            vboList.push_back(vbo);
-        }
-
         inline unsigned int GetVertexCount() const
         {
             return vertexCount;
@@ -173,47 +151,18 @@ namespace hpms
         {
             Mesh::name = name;
         }
-    };
 
-
-    struct MeshHasher
-    {
-    public:
-        size_t operator()(Mesh const key) const
+        inline const std::string& GetKey() const
         {
+            return key;
+        }
 
-            size_t hash = 0;
-            for (size_t i = 0; i < key.GetName().size(); i++)
-            {
-                hash ^= (71 * hash + key.GetName()[i]) % 5;
-            }
-
-            
-            hash ^= key.GetPositions().size();
-            hash ^= key.GetNormals().size();
-            hash ^= key.GetTextCoords().size();
-            hash ^= key.GetJointIndices().size();
-            hash ^= key.GetWeights().size();
-            hash ^= key.GetIndices().size();
-
-            if (key.IsTextured())
-            {
-                for (size_t i = 0; i < key.GetMaterial().GetTextureName().size(); i++)
-                {
-                    hash ^= (71 * hash + key.GetMaterial().GetTextureName()[i]) % 5;
-                }
-            }
-            return hash;
+        inline void SetKey(const std::string& key)
+        {
+            Mesh::key = key;
         }
     };
 
-    // TODO - Enhance compare function.
-    struct MeshEqualFn
-    {
 
-        bool operator()(Mesh const m1, Mesh const m2) const
-        {
-            return (m1.GetName().compare(m2.GetName()));
-        }
-    };
+
 }

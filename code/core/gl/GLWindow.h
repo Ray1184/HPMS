@@ -87,19 +87,15 @@ namespace hpms
                 LOG_ERROR("Unable to create GLAD loader.");
             }
 
-            glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+            glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
             glEnable(GL_DEPTH_TEST);
-            glEnable(GL_STENCIL_TEST);
+            glDepthFunc(GL_LESS);
 
 
             if (options.showTriangles)
             {
                 glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
             }
-
-
-            glEnable(GL_BLEND);
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 
             if (options.cullFace)

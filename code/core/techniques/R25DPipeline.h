@@ -17,46 +17,53 @@ namespace hpms
         {
             LOG_DEBUG("Retro 2.5D pipeline module created.");
         }
+
         void Init(Window* window, Scene& scene, Renderer* renderer) override
         {
 
             sceneShader = PipelineUtils::CreateSceneShader();
-            auto mapMeshes = scene.GetMeshMap();
 
-            for (auto entry : mapMeshes)
+            for (auto& entry : scene.GetModelsMap())
             {
-                Mesh mesh = entry.first;
-                renderer->MeshInit(mesh);
-                if (mesh.IsTextured())
+                const AdvModelItem* item = entry.first;
+                for (Mesh mesh : item->GetMeshes())
                 {
-                    Texture* tex = ResourceCache::Instance().GetTexture(mesh.GetMaterial().GetTextureName());
-                    renderer->TextureInit(*tex);
+
+                    renderer->MeshInit(mesh);
+                    if (mesh.IsTextured())
+                    {
+                        Texture* tex = ResourceCache::Instance().GetTexture(mesh.GetMaterial().GetTextureName());
+                        renderer->TextureInit(*tex);
+                    }
+
                 }
             }
 
             LOG_DEBUG("Retro 2.5D pipeline initialized.");
         }
 
-        void Render(Window* window, Scene& scene, Camera& camera, Renderer* renderer) override
+        void Render(Window* window, Scene& scene, Camera* camera, Renderer* renderer) override
         {
-            renderer->ClearBuffer();
-            PipelineUtils::RenderScene(window, camera, scene, sceneShader, transformation, false, renderer);
+            window->UpdateProjectionMatrix();
+            PipelineUtils::RenderScene(window, camera, scene, sceneShader, false, renderer);
+
         }
 
         void Cleanup(Scene& scene, Renderer* renderer) override
         {
             // Cleanup is intended only for GPU resources, not for physical data.
             hpms::CGAPIManager::Instance().FreeShaders();
-            auto mapMeshes = scene.GetMeshMap();
-            for (auto entry : mapMeshes)
+            for (auto& entry : scene.GetModelsMap())
             {
-
-                Mesh mesh = entry.first;
-                renderer->MeshCleanup(mesh);
-                if (mesh.IsTextured())
+                const AdvModelItem* item = entry.first;
+                for (Mesh mesh : item->GetMeshes())
                 {
-                    Texture* tex = ResourceCache::Instance().GetTexture(mesh.GetMaterial().GetTextureName());
-                    renderer->TextureCleanup(*tex);
+                    renderer->MeshCleanup(mesh);
+                    if (mesh.IsTextured())
+                    {
+                        Texture* tex = ResourceCache::Instance().GetTexture(mesh.GetMaterial().GetTextureName());
+                        renderer->TextureCleanup(*tex);
+                    }
                 }
             }
 
@@ -66,7 +73,6 @@ namespace hpms
     private:
 
         Shader* sceneShader;
-        Transformation transformation;
     };
 
 

@@ -242,6 +242,11 @@ void hpms::AssimpImporter::ProcessMesh(aiMesh* aiMesh, std::vector<hpms::Mesh>& 
         material = materials.at(materialIdx);
     }
     mesh.SetMaterial(material);
+    char buffer[8];
+    hpms::RandomString(buffer, 8);
+    std::stringstream ss;
+    ss << aiMesh->mName.data << "_" << buffer;
+    mesh.SetKey(ss.str());
     mesh.SetName(aiMesh->mName.data);
     meshes.push_back(mesh);
 
@@ -262,7 +267,6 @@ void hpms::AssimpImporter::BuildAnimationFrames(std::vector<hpms::Bone>& bones, 
             AnimNode* animNode = Find(bone.boneName, animRootNode);
             glm::mat4 boneMatrix = GetParentTransforms(animNode, i);
             boneMatrix = boneMatrix * bone.offsetMatrix;
-            // TODO - Check if traspose is needed.
             boneMatrix = rootTransform * boneMatrix;
 
             FrameTransform frameTransform{boneMatrix};

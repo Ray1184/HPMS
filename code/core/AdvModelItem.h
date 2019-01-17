@@ -15,10 +15,9 @@ namespace hpms
     {
     private:
 
-
+        std::string key;
         std::vector<Animation> animations;
 
-        unsigned int currentAnimationIndex;
 
     public:
 
@@ -28,6 +27,16 @@ namespace hpms
                 PODS_OPT(animations)
 
         );
+
+        AdvModelItem(const std::string& key) : key(key)
+        {}
+
+        AdvModelItem()
+        {
+            char buffer[32];
+            hpms::RandomString(buffer, 32);
+            key = std::string(buffer);
+        }
 
         inline const std::vector<Animation>& GetAnimations() const
         {
@@ -39,15 +48,10 @@ namespace hpms
             AdvModelItem::animations = animations;
         }
 
-        inline unsigned int GetCurrentAnimationIndex() const
-        {
-            return currentAnimationIndex;
-        }
 
-        inline void SetCurrentAnimationIndex(unsigned int currentAnimationIndex)
-        {
-            AdvModelItem::currentAnimationIndex = currentAnimationIndex;
-        }
+
+
+
     };
 }
 

@@ -60,7 +60,7 @@ set(TOOLS_SOURCE_FILES
         code/core/Texture.h
         code/core/ResourceCache.h
         code/common/FileSystem.cpp
-        code/tools/AssimpToHDATConverterMain.cpp)
+        code/tools/AssimpToHDATConverterMain.cpp code/core/Entity.h)
 
 set(dir ${CMAKE_CURRENT_SOURCE_DIR})
 

@@ -16,7 +16,7 @@
 
 // Dynamic updated disabled.
 /*
-#define TARGET_UPS 30.0 // Updtate per seconds.
+#define TARGET_UPS 30.0 // Update per seconds.
  */
 
 namespace hpms
@@ -176,6 +176,7 @@ namespace hpms
         {
             if (window->GetOptions().showFps)
             {
+                // TODO - FPS Show doesn't work.
                 fps++;
                 if (timer.GetLastLoopTime() - lastFps > 1)
                 {

@@ -16,7 +16,6 @@ namespace hpms
         bool showTriangles;
         bool showFps;
         bool compatibleProfile;
-        bool antialiasing;
         unsigned int pixelRatio;
         bool fullscreen;
 

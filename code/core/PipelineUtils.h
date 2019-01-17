@@ -26,13 +26,13 @@ namespace hpms
             std::string fragCode = hpms::ReadFile(SHADER_FILE_SCENE_FRAG);
             Shader* sceneShader = CGAPIManager::Instance().CreateNewShader();
             sceneShader->CreateVS(vertCode);
-
             sceneShader->CreateFS(fragCode);
             sceneShader->Link();
+
             sceneShader->CreateUniform(UNIFORM_VIEWMATRIX);
             sceneShader->CreateUniform(UNIFORM_PROJMATRIX);
+            sceneShader->CreateUniform(UNIFORM_MODELMATRIX);
             sceneShader->CreateUniform(UNIFORM_TEXSAMPLER);
-            sceneShader->CreateUniform(UNIFORM_NONINSTMATRIX);
             sceneShader->CreateMaterialUniform(UNIFORM_MATERIAL);
             sceneShader->CreateUniform(UNIFORM_AMBIENTLIGHT);
             sceneShader->CreateUniform(UNIFORM_JOINTSMATRIX);
@@ -40,52 +40,60 @@ namespace hpms
             return sceneShader;
         }
 
-        inline static void RenderScene(Window* window, Camera& camera, Scene& scene,
-                                       Shader* shader, Transformation& transformation, bool gui, Renderer* renderer)
+        inline static void RenderScene(Window* window, Camera* camera, Scene& scene,
+                                       Shader* shader, bool gui, Renderer* renderer)
         {
+            renderer->ClearBuffer();
             shader->Bind();
 
-            glm::mat4 viewMatrix = camera.GetViewMatrix();
+
+            glm::mat4 viewMatrix = camera->GetViewMatrix();
             glm::mat4 projMatrix = window->GetProjMatrix();
 
             shader->SetUniform(UNIFORM_VIEWMATRIX, viewMatrix);
             shader->SetUniform(UNIFORM_PROJMATRIX, projMatrix);
             shader->SetUniform(UNIFORM_DIFFUSEINTENSITY, gui ? 1.0f : 0.1f);
             shader->SetUniform(UNIFORM_AMBIENTLIGHT, scene.GetAmbientLight());
+            shader->SetUniform(UNIFORM_TEXSAMPLER, 0);
 
             // Render pass.
-            auto mapMeshes = scene.GetMeshMap();
-            for (auto entry : mapMeshes)
+
+            for (auto& entry : scene.GetModelsMap())
             {
-                Mesh mesh = entry.first;
-                shader->SetUniform(UNIFORM_MATERIAL, mesh.GetMaterial());
-                Texture* tex = nullptr;
-                if (mesh.IsTextured())
+                const AdvModelItem* item = entry.first;
+                for (Mesh mesh : item->GetMeshes())
                 {
-                    tex = ResourceCache::Instance().GetTexture(mesh.GetMaterial().GetTextureName());
+
+                    shader->SetUniform(UNIFORM_MATERIAL, mesh.GetMaterial());
+                    Texture* tex = nullptr;
+                    if (mesh.IsTextured())
+                    {
+                        tex = ResourceCache::Instance().GetTexture(mesh.GetMaterial().GetTextureName());
+                    }
+
+                    renderer->ModelsDraw(mesh, tex, item, scene.GetModelsMap(), shader, RenderCallback);
+
+
                 }
-
-                renderer->ModelsDraw(mesh, tex, entry.second, transformation, *shader, RenderCallback);
-
             }
-
             shader->Unbind();
         }
 
     private:
-        inline static void RenderCallback(AdvModelItem* modelItem, Transformation& transformation, Shader& shader)
+        inline static void RenderCallback(const AdvModelItem* modelItem, Entity* entity, Shader* shader)
         {
-            glm::mat4 modelMatrix = transformation.BuildModelMatrix(modelItem);
-            shader.SetUniform(UNIFORM_NONINSTMATRIX, modelMatrix);
+
+            glm::mat4 modelMatrix = Transformation::BuildModelMatrix(entity);
+            shader->SetUniform(UNIFORM_MODELMATRIX, modelMatrix);
 
             // Animation management.
             if (!modelItem->GetAnimations().empty() &&
-                modelItem->GetCurrentAnimationIndex() < modelItem->GetAnimations().size())
+                    entity->GetAnimCurrentIndex() < modelItem->GetAnimations().size())
             {
-                Animation anim = modelItem->GetAnimations()[modelItem->GetCurrentAnimationIndex()];
-                Frame frame = anim.GetFrames()[anim.GetCurrentFrameIndex()];
+                Animation anim = modelItem->GetAnimations()[entity->GetAnimCurrentIndex()];
+                Frame frame = anim.GetFrames()[entity->GetAnimCurrentFrameIndex()];
                 const glm::mat4* jointMatrices = &(frame.frameTransformations[0].jointMatrix);
-                shader.SetUniform(UNIFORM_JOINTSMATRIX, frame.frameTransformations.size(), jointMatrices);
+                shader->SetUniform(UNIFORM_JOINTSMATRIX, frame.frameTransformations.size(), jointMatrices);
 
             }
         }
