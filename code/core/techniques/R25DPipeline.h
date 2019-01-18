@@ -18,12 +18,12 @@ namespace hpms
             LOG_DEBUG("Retro 2.5D pipeline module created.");
         }
 
-        void Init(Window* window, Scene& scene, Renderer* renderer) override
+        void Init(Window* window, Scene* scene, Renderer* renderer) override
         {
 
             sceneShader = PipelineUtils::CreateSceneShader();
 
-            for (auto& entry : scene.GetModelsMap())
+            for (auto& entry : scene->GetModelsMap())
             {
                 const AdvModelItem* item = entry.first;
                 for (Mesh mesh : item->GetMeshes())
@@ -42,18 +42,18 @@ namespace hpms
             LOG_DEBUG("Retro 2.5D pipeline initialized.");
         }
 
-        void Render(Window* window, Scene& scene, Camera* camera, Renderer* renderer) override
+        void Render(Window* window, Scene* scene, Camera* camera, Renderer* renderer) override
         {
             window->UpdateProjectionMatrix();
             PipelineUtils::RenderScene(window, camera, scene, sceneShader, false, renderer);
 
         }
 
-        void Cleanup(Scene& scene, Renderer* renderer) override
+        void Cleanup(Scene* scene, Renderer* renderer) override
         {
             // Cleanup is intended only for GPU resources, not for physical data.
             hpms::CGAPIManager::Instance().FreeShaders();
-            for (auto& entry : scene.GetModelsMap())
+            for (auto& entry : scene->GetModelsMap())
             {
                 const AdvModelItem* item = entry.first;
                 for (Mesh mesh : item->GetMeshes())

@@ -40,7 +40,7 @@ namespace hpms
             return sceneShader;
         }
 
-        inline static void RenderScene(Window* window, Camera* camera, Scene& scene,
+        inline static void RenderScene(Window* window, Camera* camera, Scene* scene,
                                        Shader* shader, bool gui, Renderer* renderer)
         {
             renderer->ClearBuffer();
@@ -53,12 +53,12 @@ namespace hpms
             shader->SetUniform(UNIFORM_VIEWMATRIX, viewMatrix);
             shader->SetUniform(UNIFORM_PROJMATRIX, projMatrix);
             shader->SetUniform(UNIFORM_DIFFUSEINTENSITY, gui ? 1.0f : 0.1f);
-            shader->SetUniform(UNIFORM_AMBIENTLIGHT, scene.GetAmbientLight());
+            shader->SetUniform(UNIFORM_AMBIENTLIGHT, scene->GetAmbientLight());
             shader->SetUniform(UNIFORM_TEXSAMPLER, 0);
 
             // Render pass.
 
-            for (auto& entry : scene.GetModelsMap())
+            for (auto& entry : scene->GetModelsMap())
             {
                 const AdvModelItem* item = entry.first;
                 for (Mesh mesh : item->GetMeshes())
@@ -71,7 +71,7 @@ namespace hpms
                         tex = ResourceCache::Instance().GetTexture(mesh.GetMaterial().GetTextureName());
                     }
 
-                    renderer->ModelsDraw(mesh, tex, item, scene.GetModelsMap(), shader, RenderCallback);
+                    renderer->ModelsDraw(mesh, tex, item, scene->GetModelsMap(), shader, RenderCallback);
 
 
                 }

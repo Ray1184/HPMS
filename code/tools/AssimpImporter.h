@@ -23,7 +23,7 @@ namespace hpms
 
     struct Bone
     {
-        unsigned int boneId;
+        size_t boneId;
 
         std::string boneName;
 
@@ -136,14 +136,14 @@ namespace hpms
                 aiVector3D vec = posKey.mValue;
 
                 glm::mat4 transfMat(1.0);
-                glm::translate(transfMat, glm::vec3(vec.x, vec.y, vec.z));
+                transfMat = glm::translate(transfMat, glm::vec3(vec.x, vec.y, vec.z));
 
                 aiQuatKey quatKey = rotKeys[i];
                 aiQuaternion quat = quatKey.mValue;
 
                 glm::quat rot(quat.w, quat.x, quat.y, quat.z);
                 glm::mat4 rotMat = glm::mat4_cast(rot);
-                // TODO - Check if traspose is needed.
+                glm::rot
                 transfMat = transfMat * rotMat;
 
                 if (i < aiNodAnim->mNumScalingKeys) {

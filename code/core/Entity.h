@@ -30,6 +30,7 @@ namespace hpms
     public:
 
         Entity() : animCurrentFrameIndex(0),
+                   animCurrentIndex(0),
                    animPlay(false),
                    animLoop(false),
                    position(0.0, 0.0, 0.0),
@@ -38,6 +39,7 @@ namespace hpms
         {}
 
         Entity(const AdvModelItem* modelItem) : animCurrentFrameIndex(0),
+                                                animCurrentIndex(0),
                                                 animPlay(false),
                                                 animLoop(false),
                                                 position(0.0, 0.0, 0.0),

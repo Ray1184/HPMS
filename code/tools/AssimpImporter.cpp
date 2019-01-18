@@ -3,16 +3,13 @@
  */
 
 #include "AssimpImporter.h"
-#include "../common/Utils.h"
 #include <assimp/Importer.hpp>
-#include <iostream>
-#include <sstream>
 #include <assimp/postprocess.h>
-#include <unordered_map>
 
 static glm::mat4 AIToGLMMat4(aiMatrix4x4 ai_mat)
 {
     glm::mat4 result;
+
     aiMatrix4x4 transposed = ai_mat.Transpose();
     for (int i = 0; i < 4; i++)
     {
@@ -26,7 +23,6 @@ static glm::mat4 AIToGLMMat4(aiMatrix4x4 ai_mat)
 
 hpms::AdvModelItem* hpms::AssimpImporter::LoadModelItem(std::string& path, std::string& textDirs)
 {
-    //AdvModelItem* advModelItem = new AdvModelItem();
     AdvModelItem* advModelItem = hpms::SafeNew<AdvModelItem>();
     Assimp::Importer importer;
     const aiScene* aiScene = importer.ReadFile(path, aiProcess_GenSmoothNormals
@@ -187,11 +183,6 @@ void hpms::AssimpImporter::ProcessMesh(aiMesh* aiMesh, std::vector<hpms::Mesh>& 
             {
                 aiVertexWeight aiWeight = aiBone->mWeights[j];
                 VertexWeight vertexWeight{bone.boneId, aiWeight.mVertexId, aiWeight.mWeight};
-                if (weightSet.find(vertexWeight.vertexId) == weightSet.end())
-                {
-                    std::vector<VertexWeight> vertWeightList;
-                    weightSet.insert({vertexWeight.vertexId, vertWeightList});
-                }
                 weightSet[vertexWeight.vertexId].push_back(vertexWeight);
             }
         }
@@ -266,8 +257,7 @@ void hpms::AssimpImporter::BuildAnimationFrames(std::vector<hpms::Bone>& bones, 
             Bone bone = bones.at(j);
             AnimNode* animNode = Find(bone.boneName, animRootNode);
             glm::mat4 boneMatrix = GetParentTransforms(animNode, i);
-            boneMatrix = boneMatrix * bone.offsetMatrix;
-            boneMatrix = rootTransform * boneMatrix;
+            boneMatrix = rootTransform * boneMatrix * bone.offsetMatrix;
 
             FrameTransform frameTransform{boneMatrix};
 

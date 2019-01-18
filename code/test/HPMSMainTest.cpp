@@ -24,81 +24,22 @@ public:
     {
         renderer = new GLRenderer();
         pipeline = new R25DPipeline();
+        scene = new Scene();
 
         AdvModelItem* testModel = ResourceCache::Instance().GetModel("data/out/01.hdat");
-        //AdvModelItem* testModel = new AdvModelItem();
-        /*
-        std::vector<Mesh> meshes;
-        Mesh mesh;
 
 
-        const GLfloat g_vertex_buffer_data[] = {
-                -1.0f, -1.0f, -1.0f,
-                -1.0f, -1.0f, 1.0f,
-                -1.0f, 1.0f, 1.0f,
-                1.0f, 1.0f, -1.0f,
-                -1.0f, -1.0f, -1.0f,
-                -1.0f, 1.0f, -1.0f,
-                1.0f, -1.0f, 1.0f,
-                -1.0f, -1.0f, -1.0f,
-                1.0f, -1.0f, -1.0f,
-                1.0f, 1.0f, -1.0f,
-                1.0f, -1.0f, -1.0f,
-                -1.0f, -1.0f, -1.0f,
-                -1.0f, -1.0f, -1.0f,
-                -1.0f, 1.0f, 1.0f,
-                -1.0f, 1.0f, -1.0f,
-                1.0f, -1.0f, 1.0f,
-                -1.0f, -1.0f, 1.0f,
-                -1.0f, -1.0f, -1.0f,
-                -1.0f, 1.0f, 1.0f,
-                -1.0f, -1.0f, 1.0f,
-                1.0f, -1.0f, 1.0f,
-                1.0f, 1.0f, 1.0f,
-                1.0f, -1.0f, -1.0f,
-                1.0f, 1.0f, -1.0f,
-                1.0f, -1.0f, -1.0f,
-                1.0f, 1.0f, 1.0f,
-                1.0f, -1.0f, 1.0f,
-                1.0f, 1.0f, 1.0f,
-                1.0f, 1.0f, -1.0f,
-                -1.0f, 1.0f, -1.0f,
-                1.0f, 1.0f, 1.0f,
-                -1.0f, 1.0f, -1.0f,
-                -1.0f, 1.0f, 1.0f,
-                1.0f, 1.0f, 1.0f,
-                -1.0f, 1.0f, 1.0f,
-                1.0f, -1.0f, 1.0f
-        };
-        std::vector<float> positions(std::begin(g_vertex_buffer_data), std::end(g_vertex_buffer_data
-        ));
-
-        mesh.SetPositions(positions);
-        mesh.SetVertexCount(3);
-        mesh.SetTextured(false);
-        mesh.SetKey("CUBE00");
-        mesh.SetName("CUBE");
-        meshes.push_back(mesh);
-
-        testModel->SetMeshes(meshes);
-        */
         testEntity = new Entity(testModel);
-        testEntity->SetScale(glm::vec3(1, 1, 1));
-        testEntity->SetPosition(glm::vec3(-2, 0.0, 0));
-        glm::quat rot(glm::vec3(glm::radians(0.0), 0.0, glm::radians(0.0)));
-        testEntity->SetRotation(rot);
-        //scene.AddEntity(testEntity);
-        testEntity2 = new Entity(testModel);
-        testEntity2->SetModelItem(testModel);
-        testEntity2->SetScale(glm::vec3(0.2, 0.2, 0.2));
-        testEntity2->SetPosition(glm::vec3(0, 0, 0));
+        testEntity->SetModelItem(testModel);
+        testEntity->SetScale(glm::vec3(0.2, 0.2, 0.2));
+        testEntity->SetPosition(glm::vec3(0, 0, 0));
 
 
-        testEntity2->SetRotation(glm::angleAxis(glm::radians(90.0f), glm::vec3(-1.0f, 0.0f, 0.0f)));
-        scene.AddEntity(testEntity2);
-        scene.SetAmbientLight(glm::vec3(2, 2, 2));
+        testEntity->SetRotation(glm::angleAxis(glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+        scene->AddEntity(testEntity);
+        scene->SetAmbientLight(glm::vec3(2, 2, 2));
         cam = new Camera();
-        cam->SetPosition(glm::vec3(0, 1, 6));
+        cam->SetPosition(glm::vec3(0, 2, 3));
         cam->SetRotation(glm::vec3(glm::radians(20.0), glm::radians(0.0), 0));
         cam->UpdateViewMatrix();
         pipeline->Init(window, scene, renderer);
@@ -116,12 +57,22 @@ public:
 
     virtual void Update() override
     {
-        glm::quat rot = glm::rotate(testEntity2->GetRotation(), 0.05f, glm::vec3(0.f, 0.f, 1.f));
+        glm::quat rot = glm::rotate(testEntity->GetRotation(), 0.05f, glm::vec3(0.f, 1.f, 0.f));
 
-        testEntity2->SetRotation(rot);
+        testEntity->SetRotation(rot);
 
-        //glm::quat rot2 = glm::angleAxis(glm::radians(-angle), glm::vec3(0.f, 0.f, 1.f));
-        //testEntity->SetRotation(rot2);
+        if (!testEntity->GetModelItem()->GetAnimations().empty())
+        {
+            if (testEntity->GetAnimCurrentFrameIndex() <
+                testEntity->GetModelItem()->GetAnimations().at(0).GetFrames().size() - 1)
+            {
+                testEntity->SetAnimCurrentFrameIndex(testEntity->GetAnimCurrentFrameIndex() + 1);
+            } else
+            {
+                testEntity->SetAnimCurrentFrameIndex(0);
+            }
+        }
+
 
 
     }
@@ -149,11 +100,11 @@ public:
 
 private:
 
+
     Entity* testEntity;
-    Entity* testEntity2;
     Renderer* renderer;
     Pipeline* pipeline;
-    Scene scene;
+    Scene* scene;
     Camera* cam;
     bool quit;
 
