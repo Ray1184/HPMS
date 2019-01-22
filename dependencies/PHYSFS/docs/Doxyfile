@@ -176,7 +176,7 @@ SUBGROUPING            = YES
 # Build related configuration options
 #---------------------------------------------------------------------------
 
-# If the EXTRACT_ALL tag is set to YES doxygen will assume all entities in 
+# If the EXTRACT_ALL tag is set to YES doxygen will assume all renderList in
 # documentation are documented, even if no documentation was available. 
 # Private class members and static file members will be hidden unless 
 # the EXTRACT_PRIVATE and EXTRACT_STATIC tags are set to YES
@@ -442,7 +442,7 @@ FILTER_SOURCE_FILES    = NO
 #---------------------------------------------------------------------------
 
 # If the SOURCE_BROWSER tag is set to YES then a list of source files will 
-# be generated. Documented entities will be cross-referenced with these sources.
+# be generated. Documented renderList will be cross-referenced with these sources.
 
 SOURCE_BROWSER         = NO
 
@@ -464,7 +464,7 @@ STRIP_CODE_COMMENTS    = YES
 REFERENCED_BY_RELATION = YES
 
 # If the REFERENCES_RELATION tag is set to YES (the default) 
-# then for each documented function all documented entities 
+# then for each documented function all documented renderList
 # called/used by that function will be listed.
 
 REFERENCES_RELATION    = YES

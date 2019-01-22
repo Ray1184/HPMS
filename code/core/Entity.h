@@ -9,10 +9,11 @@
 #include "../common/Utils.h"
 #include "Actor.h"
 #include "AdvModelItem.h"
+#include "RenderObject.h"
 
 namespace hpms
 {
-    class Entity : public Actor
+    class Entity : public Actor, public RenderObject
     {
 
     private:
@@ -25,7 +26,8 @@ namespace hpms
         unsigned int animCurrentIndex;
         bool animPlay;
         bool animLoop;
-        const AdvModelItem* modelItem;
+        AdvModelItem* modelItem;
+        float virtualDepth;
 
     public:
 
@@ -35,56 +37,58 @@ namespace hpms
                    animLoop(false),
                    position(0.0, 0.0, 0.0),
                    scale(1.0, 1.0, 1.0),
-                   visible(true)
+                   visible(true),
+                   virtualDepth(0.0)
         {}
 
-        Entity(const AdvModelItem* modelItem) : animCurrentFrameIndex(0),
-                                                animCurrentIndex(0),
-                                                animPlay(false),
-                                                animLoop(false),
-                                                position(0.0, 0.0, 0.0),
-                                                scale(1.0, 1.0, 1.0),
-                                                visible(true),
-                                                modelItem(modelItem)
+        Entity(AdvModelItem* modelItem) : animCurrentFrameIndex(0),
+                                          animCurrentIndex(0),
+                                          animPlay(false),
+                                          animLoop(false),
+                                          position(0.0, 0.0, 0.0),
+                                          scale(1.0, 1.0, 1.0),
+                                          visible(true),
+                                          virtualDepth(0.0),
+                                          modelItem(modelItem)
         {}
 
-        inline const glm::vec3& GetPosition() const
+        inline const glm::vec3& GetPosition() const override
         {
             return position;
         }
 
-        inline void SetPosition(const glm::vec3& position)
+        inline void SetPosition(const glm::vec3& position) override
         {
             Entity::position = position;
         }
 
-        inline const glm::vec3& GetScale() const
+        inline const glm::vec3& GetScale() const override
         {
             return scale;
         }
 
-        inline void SetScale(const glm::vec3& scale)
+        inline void SetScale(const glm::vec3& scale) override
         {
             Entity::scale = scale;
         }
 
-        inline const glm::quat& GetRotation() const
+        inline const glm::quat& GetRotation() const override
         {
             return rotation;
         }
 
-        inline void SetRotation(const glm::quat& rotation)
+        inline void SetRotation(const glm::quat& rotation) override
         {
             Entity::rotation = rotation;
         }
 
-        inline virtual void AddController(
+        inline void AddController(
                 std::pair<std::function<void(Actor&)>, std::function<void(Actor&, float)>> callback) override
         {
             controllers.push_back(callback);
         }
 
-        inline bool IsVisible() const
+        inline bool IsVisible() const override
         {
             return visible;
         }
@@ -105,7 +109,7 @@ namespace hpms
             return modelItem;
         }
 
-        inline void SetModelItem(const AdvModelItem* modelItem)
+        inline void SetModelItem(AdvModelItem* modelItem)
         {
             Entity::modelItem = modelItem;
         }
@@ -148,6 +152,16 @@ namespace hpms
         inline void SetAnimCurrentIndex(unsigned int animCurrentIndex)
         {
             Entity::animCurrentIndex = animCurrentIndex;
+        }
+
+        inline float GetVirtualDepth() const override
+        {
+            return virtualDepth;
+        }
+
+        inline void SetVirtualDepth(float virtualDepth)
+        {
+            Entity::virtualDepth = virtualDepth;
         }
     };
 }

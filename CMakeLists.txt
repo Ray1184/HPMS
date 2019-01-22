@@ -38,6 +38,9 @@ set(RT_SOURCE_FILES
         code/core/PipelineUtils.h
         code/core/gl/GLRenderer.h
         code/core/gl/GLRenderer.cpp
+        code/core/Entity.h
+        code/core/RenderObject.h
+        code/core/LayerPicture.h
         code/test/HPMSMainTest.cpp)
 
 set(TOOLS_SOURCE_FILES
@@ -60,7 +63,7 @@ set(TOOLS_SOURCE_FILES
         code/core/Texture.h
         code/core/ResourceCache.h
         code/common/FileSystem.cpp
-        code/tools/AssimpToHDATConverterMain.cpp code/core/Entity.h)
+        code/tools/AssimpToHDATConverterMain.cpp)
 
 set(dir ${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -140,5 +143,5 @@ target_link_libraries(HPMS glfw physfs liblua)
 
 # Build the tools runtimes
 
-add_executable(AIToHDATConverter code/tools/AssimpToHDATConverterMain.cpp ${TOOLS_SOURCE_FILES})
+add_executable(AIToHDATConverter ${TOOLS_SOURCE_FILES})
 target_link_libraries(AIToHDATConverter physfs glfw assimp)

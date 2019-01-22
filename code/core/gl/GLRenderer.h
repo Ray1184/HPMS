@@ -18,10 +18,15 @@ namespace hpms
             LOG_DEBUG("OpenGL rendering module created.");
         }
 
+        void QuadMeshInit() override;
+
         void MeshInit(hpms::Mesh& mesh) override;
 
-        void ModelsDraw(Mesh& mesh, Texture* texture, const AdvModelItem* currentItem, const std::unordered_map<const AdvModelItem*, std::vector<Entity*>>& itemsMap,
-                        Shader* s, std::function<void(const AdvModelItem*, Entity*, Shader*)> pipelineCallback) override;
+        void
+        ModelsDraw(std::unordered_map<Mesh, std::vector<Entity*>, MeshHasher, MeshEqual> meshesToEntitiesMap, Shader* s,
+                   std::function<void(Entity*, Shader*)> pipelineCallback) override;
+
+        void QuadsDraw(const std::string& textureName) override;
 
         void MeshCleanup(hpms::Mesh& mesh) override;
 
@@ -29,13 +34,22 @@ namespace hpms
 
         void TextureCleanup(hpms::Texture& text) override;
 
+        void QuadMeshCleanup() override;
+
         void ClearBuffer() override;
 
     private:
 
+        GLuint quadVbo;
+
+        GLuint quadVao;
+
         std::unordered_map<std::string, GLuint> vaoMap;
 
+        std::unordered_map<std::string, GLuint> texBufferMap;
+
         std::unordered_map<std::string, std::vector<GLuint>> vbosMap;
+
 
     };
 }

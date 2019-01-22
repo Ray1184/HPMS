@@ -11,7 +11,8 @@
 #include "../core/Renderer.h"
 #include "../core/gl/GLRenderer.h"
 #include "../core/Pipeline.h"
-#include "../core/techniques/R25DPipeline.h"*/
+#include "../core/techniques/R25DPipeline.h"
+
 
 using namespace hpms;
 
@@ -32,11 +33,22 @@ public:
         testEntity = new Entity(testModel);
         testEntity->SetModelItem(testModel);
         testEntity->SetScale(glm::vec3(0.2, 0.2, 0.2));
-        testEntity->SetPosition(glm::vec3(0, 0, 0));
-
-
+        testEntity->SetPosition(glm::vec3(-0.0f, -1, 0));
         testEntity->SetRotation(glm::angleAxis(glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
-        scene->AddEntity(testEntity);
+
+        testEntity2 = new Entity(testModel);
+        testEntity2->SetModelItem(testModel);
+        testEntity2->SetScale(glm::vec3(0.2, 0.2, 0.2));
+        testEntity2->SetPosition(glm::vec3(0.0f, 0, 0));
+        testEntity2->SetRotation(glm::angleAxis(glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+        testEntity2->SetVirtualDepth(1.0f);
+
+        pic = new LayerPicture("data/resources/textures/B01_B.png");
+        pic->SetVirtualDepth(0.1f);
+
+        scene->AddRenderObject(testEntity);
+        scene->AddRenderObject(testEntity2);
+        scene->AddRenderObject(pic);
         scene->SetAmbientLight(glm::vec3(2, 2, 2));
         cam = new Camera();
         cam->SetPosition(glm::vec3(0, 2, 3));
@@ -61,6 +73,10 @@ public:
 
         testEntity->SetRotation(rot);
 
+        glm::quat rot2 = glm::rotate(testEntity2->GetRotation(), -0.05f, glm::vec3(0.f, 1.f, 0.f));
+
+        testEntity2->SetRotation(rot2);
+
         if (!testEntity->GetModelItem()->GetAnimations().empty())
         {
             if (testEntity->GetAnimCurrentFrameIndex() <
@@ -73,7 +89,19 @@ public:
             }
         }
 
+        if (!testEntity2->GetModelItem()->GetAnimations().empty())
+        {
+            if (testEntity2->GetAnimCurrentFrameIndex() <
+                testEntity2->GetModelItem()->GetAnimations().at(0).GetFrames().size() - 1)
+            {
+                testEntity2->SetAnimCurrentFrameIndex(testEntity2->GetAnimCurrentFrameIndex() + 1);
+            } else
+            {
+                testEntity2->SetAnimCurrentFrameIndex(0);
+            }
+        }
 
+        scene->UpdateBuckets();
 
     }
 
@@ -102,6 +130,8 @@ private:
 
 
     Entity* testEntity;
+    Entity* testEntity2;
+    LayerPicture* pic;
     Renderer* renderer;
     Pipeline* pipeline;
     Scene* scene;

@@ -21,23 +21,35 @@ namespace hpms
         void Init(Window* window, Scene* scene, Renderer* renderer) override
         {
 
-            sceneShader = PipelineUtils::CreateSceneShader();
+            scene3DShader = PipelineUtils::Create3DSceneShader();
+            sceneLayersShader = PipelineUtils::CreateLayersSceneShader();
 
-            for (auto& entry : scene->GetModelsMap())
+            for (Mesh mesh : scene->GetMeshes())
             {
-                const AdvModelItem* item = entry.first;
-                for (Mesh mesh : item->GetMeshes())
-                {
 
-                    renderer->MeshInit(mesh);
-                    if (mesh.IsTextured())
+                renderer->MeshInit(mesh);
+                if (mesh.IsTextured())
+                {
+                    Texture* tex = ResourceCache::Instance().GetTexture(mesh.GetMaterial().GetTextureName());
+                    if (tex)
                     {
-                        Texture* tex = ResourceCache::Instance().GetTexture(mesh.GetMaterial().GetTextureName());
                         renderer->TextureInit(*tex);
                     }
+                }
 
+            }
+
+            for (std::string picPath : scene->GetPicturePaths())
+            {
+                Texture* tex = ResourceCache::Instance().GetTexture(picPath);
+                if (tex)
+                {
+                    renderer->TextureInit(*tex);
                 }
             }
+
+
+            renderer->QuadMeshInit();
 
             LOG_DEBUG("Retro 2.5D pipeline initialized.");
         }
@@ -45,7 +57,7 @@ namespace hpms
         void Render(Window* window, Scene* scene, Camera* camera, Renderer* renderer) override
         {
             window->UpdateProjectionMatrix();
-            PipelineUtils::RenderScene(window, camera, scene, sceneShader, false, renderer);
+            PipelineUtils::RenderScene(window, camera, scene, scene3DShader, sceneLayersShader, false, renderer);
 
         }
 
@@ -53,26 +65,37 @@ namespace hpms
         {
             // Cleanup is intended only for GPU resources, not for physical data.
             hpms::CGAPIManager::Instance().FreeShaders();
-            for (auto& entry : scene->GetModelsMap())
+            for (Mesh mesh : scene->GetMeshes())
             {
-                const AdvModelItem* item = entry.first;
-                for (Mesh mesh : item->GetMeshes())
+                renderer->MeshCleanup(mesh);
+                if (mesh.IsTextured())
                 {
-                    renderer->MeshCleanup(mesh);
-                    if (mesh.IsTextured())
+                    Texture* tex = ResourceCache::Instance().GetTexture(mesh.GetMaterial().GetTextureName());
+                    if (tex)
                     {
-                        Texture* tex = ResourceCache::Instance().GetTexture(mesh.GetMaterial().GetTextureName());
                         renderer->TextureCleanup(*tex);
                     }
                 }
             }
+
+            for (std::string texPath : scene->GetPicturePaths())
+            {
+                Texture* tex = ResourceCache::Instance().GetTexture(texPath);
+                if (tex)
+                {
+                    renderer->TextureCleanup(*tex);
+                }
+            }
+
+            renderer->QuadMeshCleanup();
 
             LOG_DEBUG("Retro 2.5D pipeline cleanup done.");
         }
 
     private:
 
-        Shader* sceneShader;
+        Shader* scene3DShader;
+        Shader* sceneLayersShader;
     };
 
 

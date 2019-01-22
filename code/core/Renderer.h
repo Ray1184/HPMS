@@ -20,17 +20,23 @@ namespace hpms
 
     public:
 
+        virtual void QuadMeshInit() = 0;
+
         virtual void MeshInit(hpms::Mesh& mesh) = 0;
 
         virtual void
-        ModelsDraw(Mesh& mesh, Texture* texture, const AdvModelItem* currentItem, const std::unordered_map<const AdvModelItem*, std::vector<Entity*>>& itemsMap,
-                   Shader* s, std::function<void(const AdvModelItem*, Entity*, Shader*)> pipelineCallback) = 0;
+        ModelsDraw(std::unordered_map<Mesh, std::vector<Entity*>, MeshHasher, MeshEqual> meshesToEntitiesMap, Shader* s,
+                   std::function<void(Entity*, Shader*)> pipelineCallback) = 0;
+
+        virtual void QuadsDraw(const std::string& textureName) = 0;
 
         virtual void MeshCleanup(hpms::Mesh& mesh) = 0;
 
         virtual void TextureInit(hpms::Texture& text) = 0;
 
         virtual void TextureCleanup(hpms::Texture& text) = 0;
+
+        virtual void QuadMeshCleanup() = 0;
 
         virtual void ClearBuffer() = 0;
 

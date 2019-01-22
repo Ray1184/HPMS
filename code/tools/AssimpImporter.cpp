@@ -233,8 +233,8 @@ void hpms::AssimpImporter::ProcessMesh(aiMesh* aiMesh, std::vector<hpms::Mesh>& 
         material = materials.at(materialIdx);
     }
     mesh.SetMaterial(material);
-    char buffer[8];
-    hpms::RandomString(buffer, 8);
+    char buffer[32];
+    hpms::RandomString(buffer, 32);
     std::stringstream ss;
     ss << aiMesh->mName.data << "_" << buffer;
     mesh.SetKey(ss.str());

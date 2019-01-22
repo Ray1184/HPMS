@@ -57,7 +57,7 @@ namespace hpms
         {
             for (AnimNode* child : children)
             {
-                delete child;
+                hpms::SafeDelete(child);
             }
         }
 
@@ -143,7 +143,6 @@ namespace hpms
 
                 glm::quat rot(quat.w, quat.x, quat.y, quat.z);
                 glm::mat4 rotMat = glm::mat4_cast(rot);
-                glm::rot
                 transfMat = transfMat * rotMat;
 
                 if (i < aiNodAnim->mNumScalingKeys) {

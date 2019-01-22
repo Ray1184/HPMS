@@ -12,6 +12,7 @@
 #include "Scene.h"
 #include "Renderer.h"
 #include "ResourceCache.h"
+#include "LayerPicture.h"
 
 namespace hpms
 {
@@ -20,7 +21,7 @@ namespace hpms
 
     public:
 
-        inline static Shader* CreateSceneShader()
+        inline static Shader* Create3DSceneShader()
         {
             std::string vertCode = hpms::ReadFile(SHADER_FILE_SCENE_VERT);
             std::string fragCode = hpms::ReadFile(SHADER_FILE_SCENE_FRAG);
@@ -40,57 +41,112 @@ namespace hpms
             return sceneShader;
         }
 
-        inline static void RenderScene(Window* window, Camera* camera, Scene* scene,
-                                       Shader* shader, bool gui, Renderer* renderer)
+        inline static Shader* CreateLayersSceneShader()
         {
-            renderer->ClearBuffer();
-            shader->Bind();
+            std::string vertCode = hpms::ReadFile(SHADER_FILE_PICTURE_VERT);
+            std::string fragCode = hpms::ReadFile(SHADER_FILE_PICTURE_FRAG);
+            Shader* layerShader = CGAPIManager::Instance().CreateNewShader();
+            layerShader->CreateVS(vertCode);
+            layerShader->CreateFS(fragCode);
+            layerShader->Link();
 
-
-            glm::mat4 viewMatrix = camera->GetViewMatrix();
-            glm::mat4 projMatrix = window->GetProjMatrix();
-
-            shader->SetUniform(UNIFORM_VIEWMATRIX, viewMatrix);
-            shader->SetUniform(UNIFORM_PROJMATRIX, projMatrix);
-            shader->SetUniform(UNIFORM_DIFFUSEINTENSITY, gui ? 1.0f : 0.1f);
-            shader->SetUniform(UNIFORM_AMBIENTLIGHT, scene->GetAmbientLight());
-            shader->SetUniform(UNIFORM_TEXSAMPLER, 0);
-
-            // Render pass.
-
-            for (auto& entry : scene->GetModelsMap())
-            {
-                const AdvModelItem* item = entry.first;
-                for (Mesh mesh : item->GetMeshes())
-                {
-
-                    shader->SetUniform(UNIFORM_MATERIAL, mesh.GetMaterial());
-                    Texture* tex = nullptr;
-                    if (mesh.IsTextured())
-                    {
-                        tex = ResourceCache::Instance().GetTexture(mesh.GetMaterial().GetTextureName());
-                    }
-
-                    renderer->ModelsDraw(mesh, tex, item, scene->GetModelsMap(), shader, RenderCallback);
-
-
-                }
-            }
-            shader->Unbind();
+            layerShader->CreateUniform(UNIFORM_TEXSAMPLER);
+            layerShader->CreateUniform(UNIFORM_ALPHA);
+            layerShader->CreateUniform(UNIFORM_X);
+            layerShader->CreateUniform(UNIFORM_Y);
+            return layerShader;
         }
 
+        inline static void RenderScene(Window* window, Camera* camera, Scene* scene,
+                                       Shader* scene3DShader, Shader* layerShader, bool gui, Renderer* renderer)
+        {
+            renderer->ClearBuffer();
+
+
+            // Render pass.
+            for (float vDepth : scene->GetRenderQueue().depthBuckets)
+            {
+
+                std::vector<RenderObject*> renderObjects = scene->GetRenderQueue().elements[vDepth];
+
+                // TODO - Avoid cast, use two maps instead.
+                // Render 3D meshes.
+                if (!renderObjects.empty() && dynamic_cast<Entity*>(renderObjects[0]))
+                {
+
+
+                    scene3DShader->Bind();
+
+
+                    glm::mat4 viewMatrix = camera->GetViewMatrix();
+                    glm::mat4 projMatrix = window->GetProjMatrix();
+
+                    scene3DShader->SetUniform(UNIFORM_VIEWMATRIX, viewMatrix);
+                    scene3DShader->SetUniform(UNIFORM_PROJMATRIX, projMatrix);
+                    scene3DShader->SetUniform(UNIFORM_DIFFUSEINTENSITY, gui ? 1.0f : 0.1f);
+                    scene3DShader->SetUniform(UNIFORM_AMBIENTLIGHT, scene->GetAmbientLight());
+                    scene3DShader->SetUniform(UNIFORM_TEXSAMPLER, 0);
+
+                    std::unordered_map<Mesh, std::vector<Entity*>, MeshHasher, MeshEqual> meshesToEntitiesMap;
+
+                    for (RenderObject* ro : renderObjects)
+                    {
+                        if (ro->IsVisible() && dynamic_cast<Entity*>(ro))
+                        {
+                            Entity* entity = dynamic_cast<Entity*>(ro);
+                            for (Mesh mesh : entity->GetModelItem()->GetMeshes())
+                            {
+                                meshesToEntitiesMap[mesh].push_back(entity);
+                            }
+                        }
+
+
+                        renderer->ModelsDraw(meshesToEntitiesMap, scene3DShader, RenderCallback);
+
+
+                    }
+
+                    scene3DShader->Unbind();
+
+                }
+                    // Render layers.
+                else if (!renderObjects.empty() && dynamic_cast<LayerPicture*>(renderObjects[0]))
+                {
+                    layerShader->Bind();
+
+                    layerShader->SetUniform(UNIFORM_TEXSAMPLER, 0);
+
+                    for (RenderObject* ro : renderObjects)
+                    {
+                        if (ro->IsVisible() && dynamic_cast<LayerPicture*>(ro))
+                        {
+                            LayerPicture* picture = dynamic_cast<LayerPicture*>(ro);
+                            layerShader->SetUniform(UNIFORM_ALPHA, picture->GetAlpha());
+                            layerShader->SetUniform(UNIFORM_X, picture->GetX());
+                            layerShader->SetUniform(UNIFORM_Y, picture->GetY());
+                            renderer->QuadsDraw(picture->GetImagePath());
+                        }
+                    }
+
+
+                    layerShader->Unbind();
+                }
+            }
+        }
+
+
     private:
-        inline static void RenderCallback(const AdvModelItem* modelItem, Entity* entity, Shader* shader)
+        inline static void RenderCallback(Entity* entity, Shader* shader)
         {
 
             glm::mat4 modelMatrix = Transformation::BuildModelMatrix(entity);
             shader->SetUniform(UNIFORM_MODELMATRIX, modelMatrix);
 
             // Animation management.
-            if (!modelItem->GetAnimations().empty() &&
-                    entity->GetAnimCurrentIndex() < modelItem->GetAnimations().size())
+            if (!entity->GetModelItem()->GetAnimations().empty() &&
+                entity->GetAnimCurrentIndex() < entity->GetModelItem()->GetAnimations().size())
             {
-                Animation anim = modelItem->GetAnimations()[entity->GetAnimCurrentIndex()];
+                Animation anim = entity->GetModelItem()->GetAnimations()[entity->GetAnimCurrentIndex()];
                 Frame frame = anim.GetFrames()[entity->GetAnimCurrentFrameIndex()];
                 const glm::mat4* jointMatrices = &(frame.frameTransformations[0].jointMatrix);
                 shader->SetUniform(UNIFORM_JOINTSMATRIX, frame.frameTransformations.size(), jointMatrices);

@@ -33,7 +33,6 @@ namespace hpms
         std::string key;
 
 
-
     public:
 
 
@@ -161,8 +160,37 @@ namespace hpms
         {
             Mesh::key = key;
         }
+
+        bool operator==(const Mesh& rhs) const
+        {
+            return key.compare(rhs.GetKey()) == 0;
+        }
+
+        bool operator!=(const Mesh& rhs) const
+        {
+            return !(rhs == *this);
+        }
     };
 
+
+    struct MeshHasher
+    {
+        std::size_t operator()(const Mesh& m) const
+        {
+            size_t res = 17;
+            res = res * 31 + std::hash<std::string>()(m.GetKey());
+            return res;
+        }
+    };
+
+    struct MeshEqual
+    {
+
+        bool operator()(const Mesh& m1, const Mesh& m2) const
+        {
+            return m1.GetKey().compare(m2.GetKey()) == 0;
+        }
+    };
 
 
 }

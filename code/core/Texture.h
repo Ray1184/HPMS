@@ -17,7 +17,6 @@ namespace hpms
         int numComp;
         unsigned char* data;
         std::string path;
-        unsigned int id;
         bool loaded;
 
     public:
@@ -40,16 +39,6 @@ namespace hpms
         inline void FreeImageData()
         {
             stbi_image_free(data);
-        }
-
-        inline unsigned int GetId() const
-        {
-            return id;
-        }
-
-        inline void SetId(unsigned int id)
-        {
-            Texture::id = id;
         }
 
         inline int GetWidth() const

@@ -2,6 +2,36 @@
  * File GLRenderer.cpp
  */
 #include "GLRenderer.h"
+#include "../ResourceCache.h"
+#include "../Names.h"
+
+void hpms::GLRenderer::QuadMeshInit()
+{
+    glGenVertexArrays(1, &quadVao);
+    glBindVertexArray(quadVao);
+
+    GLfloat vertices[] = {
+            -1.0f, -1.0f, 0.0f,
+            1.0f, -1.0f, 0.0f,
+            -1.0f, 1.0f, 0.0f,
+            -1.0f, 1.0f, 0.0f,
+            1.0f, -1.0f, 0.0f,
+            1.0f, 1.0f, 0.0f
+    };
+
+    // Positions.
+    glGenBuffers(1, &quadVbo);
+    glBindBuffer(GL_ARRAY_BUFFER, quadVbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices),
+                 vertices, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+
+    // Unbind VBO and VAO.
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+
+    LOG_DEBUG(std::string("Pictures quad initialized.").c_str());
+}
 
 void hpms::GLRenderer::MeshInit(hpms::Mesh& mesh)
 {
@@ -69,49 +99,78 @@ void hpms::GLRenderer::MeshInit(hpms::Mesh& mesh)
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
-    LOG_DEBUG(std::string("Mesh with name " + mesh.GetName() + " initialized.").c_str());
+    LOG_DEBUG(std::string("Mesh with key " + mesh.GetKey() + " initialized.").c_str());
 }
 
-void hpms::GLRenderer::ModelsDraw(Mesh& mesh, Texture* texture, const AdvModelItem* currentItem,
-                                  const std::unordered_map<const AdvModelItem*, std::vector<Entity*>>& itemsMap,
-                                  Shader* s,
-                                  std::function<void(const AdvModelItem*, Entity*, Shader*)> pipelineCallback)
+void
+hpms::GLRenderer::ModelsDraw(std::unordered_map<Mesh, std::vector<Entity*>, MeshHasher, MeshEqual> meshesToEntitiesMap,
+                             Shader* s, std::function<void(Entity*, Shader*)> pipelineCallback)
 {
-    // Texture activation.
-    if (mesh.IsTextured())
+
+
+    for (auto& entry : meshesToEntitiesMap)
     {
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture->GetId());
+        Mesh mesh = entry.first;
+
+        s->SetUniform(UNIFORM_MATERIAL, mesh.GetMaterial());
+        Texture* tex = nullptr;
+        if (mesh.IsTextured())
+        {
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, texBufferMap[mesh.GetMaterial().GetTextureName()]);
+        }
+
+        // Draw the mesh.
+        glBindVertexArray(vaoMap[mesh.GetKey()]);
+
+        glEnableVertexAttribArray(0);
+        glEnableVertexAttribArray(1);
+        glEnableVertexAttribArray(2);
+        glEnableVertexAttribArray(3);
+        glEnableVertexAttribArray(4);
+
+        for (Entity* entity : entry.second)
+        {
+            pipelineCallback(entity, s);
+            glDrawElements(GL_TRIANGLES, mesh.GetVertexCount(), GL_UNSIGNED_INT, nullptr);
+        }
+
+
+
+        // Restore state.
+        glDisableVertexAttribArray(4);
+        glDisableVertexAttribArray(3);
+        glDisableVertexAttribArray(2);
+        glDisableVertexAttribArray(1);
+        glDisableVertexAttribArray(0);
+        glBindVertexArray(0);
+
+        glBindTexture(GL_TEXTURE_2D, 0);
     }
+
+    glClear(GL_DEPTH_BUFFER_BIT);
+
+
+}
+
+void hpms::GLRenderer::QuadsDraw(const std::string& textureName)
+{
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texBufferMap[textureName]);
+
+    glBindVertexArray(quadVao);
+    glEnableVertexAttribArray(0);
 
     // Draw the mesh.
-    glBindVertexArray(vaoMap[mesh.GetKey()]);
-
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-    glEnableVertexAttribArray(2);
-    glEnableVertexAttribArray(3);
-    glEnableVertexAttribArray(4);
-
-
-    // Invoke pipeline callback and then render.
-    for (Entity* entity : itemsMap.at(currentItem))
-    {
-        pipelineCallback(currentItem, entity, s);
-        glDrawElements(GL_TRIANGLES, mesh.GetVertexCount(), GL_UNSIGNED_INT, nullptr);
-
-    }
+    glDrawArrays(GL_TRIANGLES, 0, 6);
 
     // Restore state.
-    glDisableVertexAttribArray(4);
-    glDisableVertexAttribArray(3);
-    glDisableVertexAttribArray(2);
-    glDisableVertexAttribArray(1);
     glDisableVertexAttribArray(0);
     glBindVertexArray(0);
 
     glBindTexture(GL_TEXTURE_2D, 0);
 
+    glClear(GL_DEPTH_BUFFER_BIT);
 }
 
 void hpms::GLRenderer::MeshCleanup(hpms::Mesh& mesh)
@@ -125,7 +184,7 @@ void hpms::GLRenderer::MeshCleanup(hpms::Mesh& mesh)
         glDeleteBuffers(1, &buffer);
     }
 
-    LOG_DEBUG(std::string("Mesh with name " + mesh.GetName() + " cleanup done.").c_str());
+    LOG_DEBUG(std::string("Mesh with key " + mesh.GetKey() + " cleanup done.").c_str());
 }
 
 void hpms::GLRenderer::TextureInit(hpms::Texture& text)
@@ -134,9 +193,9 @@ void hpms::GLRenderer::TextureInit(hpms::Texture& text)
     unsigned int id;
     glGenTextures(1, &id);
 
-    text.SetId(id);
+    texBufferMap[text.GetPath()] = id;
     glBindTexture(GL_TEXTURE_2D, id);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, text.GetWidth(),
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, text.GetWidth(),
                  text.GetHeight(), 0, GL_RGBA,
                  GL_UNSIGNED_BYTE, text.GetData());
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -149,12 +208,23 @@ void hpms::GLRenderer::TextureInit(hpms::Texture& text)
 
 void hpms::GLRenderer::TextureCleanup(hpms::Texture& text)
 {
-    unsigned int id = text.GetId();
+    unsigned int id = texBufferMap[text.GetPath()];
     glDeleteTextures(1, &id);
-    text.SetId(id);
 
     LOG_DEBUG(std::string("Texture with name " + text.GetPath() + " cleanup done.").c_str());
 
+}
+
+void hpms::GLRenderer::QuadMeshCleanup()
+{
+    glDisableVertexAttribArray(0);
+
+    // Delete the VBO
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    glDeleteBuffers(1, &quadVbo);
+
+    LOG_DEBUG(std::string("Pictures quad cleanup done.").c_str());
 }
 
 void hpms::GLRenderer::ClearBuffer()
