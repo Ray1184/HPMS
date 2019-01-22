@@ -3,7 +3,6 @@
  */
 #include "GLRenderer.h"
 #include "../ResourceCache.h"
-#include "../Names.h"
 
 void hpms::GLRenderer::QuadMeshInit()
 {
@@ -147,10 +146,6 @@ hpms::GLRenderer::ModelsDraw(std::unordered_map<Mesh, std::vector<Entity*>, Mesh
 
         glBindTexture(GL_TEXTURE_2D, 0);
     }
-
-    glClear(GL_DEPTH_BUFFER_BIT);
-
-
 }
 
 void hpms::GLRenderer::QuadsDraw(const std::string& textureName)
@@ -170,7 +165,6 @@ void hpms::GLRenderer::QuadsDraw(const std::string& textureName)
 
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    glClear(GL_DEPTH_BUFFER_BIT);
 }
 
 void hpms::GLRenderer::MeshCleanup(hpms::Mesh& mesh)
@@ -227,9 +221,16 @@ void hpms::GLRenderer::QuadMeshCleanup()
     LOG_DEBUG(std::string("Pictures quad cleanup done.").c_str());
 }
 
-void hpms::GLRenderer::ClearBuffer()
+void hpms::GLRenderer::ClearAllBuffers()
 {
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+}
+
+void hpms::GLRenderer::ClearDepthBuffer()
+{
+
+    glClear(GL_DEPTH_BUFFER_BIT);
 
 }

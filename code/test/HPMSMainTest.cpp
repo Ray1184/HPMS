@@ -36,12 +36,13 @@ public:
         testEntity->SetPosition(glm::vec3(-0.0f, -1, 0));
         testEntity->SetRotation(glm::angleAxis(glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
 
+
         testEntity2 = new Entity(testModel);
         testEntity2->SetModelItem(testModel);
         testEntity2->SetScale(glm::vec3(0.2, 0.2, 0.2));
         testEntity2->SetPosition(glm::vec3(0.0f, 0, 0));
         testEntity2->SetRotation(glm::angleAxis(glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
-        testEntity2->SetVirtualDepth(1.0f);
+        testEntity2->SetVirtualDepth(-0.1f);
 
         pic = new LayerPicture("data/resources/textures/B01_B.png");
         pic->SetVirtualDepth(0.1f);

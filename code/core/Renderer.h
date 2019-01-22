@@ -38,7 +38,9 @@ namespace hpms
 
         virtual void QuadMeshCleanup() = 0;
 
-        virtual void ClearBuffer() = 0;
+        virtual void ClearAllBuffers() = 0;
+
+        virtual void ClearDepthBuffer() = 0;
 
     };
 }

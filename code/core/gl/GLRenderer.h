@@ -36,7 +36,9 @@ namespace hpms
 
         void QuadMeshCleanup() override;
 
-        void ClearBuffer() override;
+        void ClearAllBuffers() override;
+
+        void ClearDepthBuffer() override;
 
     private:
 

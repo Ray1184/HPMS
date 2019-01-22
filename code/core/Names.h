@@ -57,3 +57,7 @@
 #define SHADER_FILE_PICTURE_FRAG SHADERS_FOLDER "Picture.frag"
 #define SHADER_FILE_DEPTHMASK_VERT SHADERS_FOLDER "DepthMask.vert"
 #define SHADER_FILE_DEPTHMASK_FRAG SHADERS_FOLDER "DepthMask.frag"
+
+// Object types.
+#define OBJ_TYPE_ENTITY 0
+#define OBJ_TYPE_LAYER 1

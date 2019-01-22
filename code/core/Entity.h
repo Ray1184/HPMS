@@ -10,6 +10,7 @@
 #include "Actor.h"
 #include "AdvModelItem.h"
 #include "RenderObject.h"
+#include "Names.h"
 
 namespace hpms
 {
@@ -162,6 +163,11 @@ namespace hpms
         inline void SetVirtualDepth(float virtualDepth)
         {
             Entity::virtualDepth = virtualDepth;
+        }
+
+        inline unsigned int GetTypeId() const override
+        {
+            return OBJ_TYPE_ENTITY;
         }
     };
 }

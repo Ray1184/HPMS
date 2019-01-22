@@ -5,6 +5,7 @@
 #pragma once
 
 #include <unordered_map>
+#include <typeinfo>
 #include <string>
 #include <vector>
 #include <algorithm>
@@ -22,7 +23,7 @@ namespace hpms
 
         std::vector<RenderObject*> allRenderObjects;
 
-        std::unordered_map<float, std::vector<RenderObject*>> elements;
+        std::unordered_map<float, std::unordered_map<unsigned int, std::vector<RenderObject*>>> elements;
     };
 
 
@@ -70,7 +71,7 @@ namespace hpms
                 {
                     renderQueue.depthBuckets.push_back(obj->GetVirtualDepth());
                 }
-                renderQueue.elements[obj->GetVirtualDepth()].push_back(obj);
+                renderQueue.elements[obj->GetVirtualDepth()][obj->GetTypeId()].push_back(obj);
             }
 
             std::sort(renderQueue.depthBuckets.begin(), renderQueue.depthBuckets.end(), std::greater<float>());

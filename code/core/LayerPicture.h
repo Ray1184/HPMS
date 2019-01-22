@@ -6,6 +6,7 @@
 
 #include "RenderObject.h"
 #include "AdvModelItem.h"
+#include "Names.h"
 
 namespace hpms
 {
@@ -90,6 +91,21 @@ namespace hpms
         inline void SetImagePath(const std::string& imagePath)
         {
             LayerPicture::imagePath = imagePath;
+        }
+
+        bool operator==(const LayerPicture& rhs) const
+        {
+            return imagePath.compare(rhs.GetImagePath()) == 0;
+        }
+
+        bool operator!=(const LayerPicture& rhs) const
+        {
+            return !(rhs == *this);
+        }
+
+        inline unsigned int GetTypeId() const override
+        {
+            return OBJ_TYPE_LAYER;
         }
 
     };

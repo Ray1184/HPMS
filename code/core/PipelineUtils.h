@@ -14,6 +14,9 @@
 #include "ResourceCache.h"
 #include "LayerPicture.h"
 
+#define TYPE_ENTITY "Entity"
+#define TYPE_LAYER "LayerPicture"
+
 namespace hpms
 {
     class PipelineUtils
@@ -60,20 +63,18 @@ namespace hpms
         inline static void RenderScene(Window* window, Camera* camera, Scene* scene,
                                        Shader* scene3DShader, Shader* layerShader, bool gui, Renderer* renderer)
         {
-            renderer->ClearBuffer();
+            renderer->ClearAllBuffers();
 
 
             // Render pass.
             for (float vDepth : scene->GetRenderQueue().depthBuckets)
             {
 
-                std::vector<RenderObject*> renderObjects = scene->GetRenderQueue().elements[vDepth];
+                std::unordered_map<unsigned int, std::vector<RenderObject*>>& renderObjects = scene->GetRenderQueue().elements[vDepth];
 
-                // TODO - Avoid cast, use two maps instead.
-                // Render 3D meshes.
-                if (!renderObjects.empty() && dynamic_cast<Entity*>(renderObjects[0]))
+                // Render entities.
+                if (!renderObjects[OBJ_TYPE_ENTITY].empty())
                 {
-
 
                     scene3DShader->Bind();
 
@@ -89,9 +90,9 @@ namespace hpms
 
                     std::unordered_map<Mesh, std::vector<Entity*>, MeshHasher, MeshEqual> meshesToEntitiesMap;
 
-                    for (RenderObject* ro : renderObjects)
+                    for (RenderObject* ro : renderObjects[OBJ_TYPE_ENTITY])
                     {
-                        if (ro->IsVisible() && dynamic_cast<Entity*>(ro))
+                        if (ro->IsVisible())
                         {
                             Entity* entity = dynamic_cast<Entity*>(ro);
                             for (Mesh mesh : entity->GetModelItem()->GetMeshes())
@@ -109,18 +110,19 @@ namespace hpms
                     scene3DShader->Unbind();
 
                 }
-                    // Render layers.
-                else if (!renderObjects.empty() && dynamic_cast<LayerPicture*>(renderObjects[0]))
+                // Render layers.
+                if (!renderObjects[OBJ_TYPE_LAYER].empty())
                 {
                     layerShader->Bind();
 
                     layerShader->SetUniform(UNIFORM_TEXSAMPLER, 0);
 
-                    for (RenderObject* ro : renderObjects)
+                    for (RenderObject* ro : renderObjects[OBJ_TYPE_LAYER])
                     {
-                        if (ro->IsVisible() && dynamic_cast<LayerPicture*>(ro))
+                        if (ro->IsVisible())
                         {
                             LayerPicture* picture = dynamic_cast<LayerPicture*>(ro);
+
                             layerShader->SetUniform(UNIFORM_ALPHA, picture->GetAlpha());
                             layerShader->SetUniform(UNIFORM_X, picture->GetX());
                             layerShader->SetUniform(UNIFORM_Y, picture->GetY());
@@ -131,6 +133,9 @@ namespace hpms
 
                     layerShader->Unbind();
                 }
+
+                renderer->ClearDepthBuffer();
+
             }
         }
 

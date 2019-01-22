@@ -3,6 +3,8 @@
  */
 #pragma once
 
+#include <string>
+
 namespace hpms
 {
 
@@ -12,5 +14,7 @@ namespace hpms
         virtual bool IsVisible() const = 0;
 
         virtual float GetVirtualDepth() const = 0;
+
+        virtual unsigned int GetTypeId() const = 0;
     };
 }
