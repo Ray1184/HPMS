@@ -48,7 +48,10 @@ namespace hpms
             AdvModelItem::animations = animations;
         }
 
-
+        inline const Animation* GetAnimationWithIndex(unsigned int index) const
+        {
+            return &animations[index];
+        }
 
 
 

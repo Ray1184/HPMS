@@ -31,25 +31,31 @@ public:
 
 
         testEntity = new Entity(testModel);
-        testEntity->SetModelItem(testModel);
         testEntity->SetScale(glm::vec3(0.2, 0.2, 0.2));
         testEntity->SetPosition(glm::vec3(-0.0f, -1, 0));
         testEntity->SetRotation(glm::angleAxis(glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
 
 
         testEntity2 = new Entity(testModel);
-        testEntity2->SetModelItem(testModel);
         testEntity2->SetScale(glm::vec3(0.2, 0.2, 0.2));
         testEntity2->SetPosition(glm::vec3(0.0f, 0, 0));
         testEntity2->SetRotation(glm::angleAxis(glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
-        testEntity2->SetVirtualDepth(-0.1f);
 
-        pic = new LayerPicture("data/resources/textures/B01_B.png");
-        pic->SetVirtualDepth(0.1f);
+        pic = new Picture("data/resources/textures/B01_B.png", BACKGROUND);
+
 
         scene->AddRenderObject(testEntity);
         scene->AddRenderObject(testEntity2);
         scene->AddRenderObject(pic);
+        for (int i = 0; i < 20; i++)
+        {
+            Entity* testEntityN = new Entity(testModel);
+            testEntityN->SetScale(glm::vec3(0.2, 0.2, 0.2));
+            testEntityN->SetPosition(glm::vec3((i / 10.0f) - 3, -1, (i / 10.0f) - 3));
+            testEntityN->SetRotation(glm::angleAxis(glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+            testEntityN->SetAnimCurrentFrameIndex(0);
+            scene->AddRenderObject(testEntityN);
+        }
         scene->SetAmbientLight(glm::vec3(2, 2, 2));
         cam = new Camera();
         cam->SetPosition(glm::vec3(0, 2, 3));
@@ -70,6 +76,8 @@ public:
 
     virtual void Update() override
     {
+
+
         glm::quat rot = glm::rotate(testEntity->GetRotation(), 0.05f, glm::vec3(0.f, 1.f, 0.f));
 
         testEntity->SetRotation(rot);
@@ -102,7 +110,6 @@ public:
             }
         }
 
-        scene->UpdateBuckets();
 
     }
 
@@ -132,7 +139,7 @@ private:
 
     Entity* testEntity;
     Entity* testEntity2;
-    LayerPicture* pic;
+    Picture* pic;
     Renderer* renderer;
     Pipeline* pipeline;
     Scene* scene;
@@ -163,7 +170,7 @@ int SimulateNew()
     pers.fov = glm::radians(60.0);
     pers.zNear = 0.5;
     pers.zFar = 20;
-    Simulator sim("HPMS Test", 320, 200, true, opts, pers, logic);
+    Simulator sim("HPMS Test", 320, 200, false, opts, pers, logic);
     sim.Start();
     return 0;
 }

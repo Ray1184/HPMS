@@ -107,6 +107,11 @@ namespace hpms
             Animation::duration = duration;
         }
 
+        inline const Frame* GetFrameWithIndex(unsigned int index) const
+        {
+            return &frames[index];
+        }
+
 
 
     private:

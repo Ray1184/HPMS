@@ -12,10 +12,9 @@
 #include "Scene.h"
 #include "Renderer.h"
 #include "ResourceCache.h"
-#include "LayerPicture.h"
+#include "items/Picture.h"
+#include "FrustumCullingCalculator.h"
 
-#define TYPE_ENTITY "Entity"
-#define TYPE_LAYER "LayerPicture"
 
 namespace hpms
 {
@@ -33,9 +32,8 @@ namespace hpms
             sceneShader->CreateFS(fragCode);
             sceneShader->Link();
 
-            sceneShader->CreateUniform(UNIFORM_VIEWMATRIX);
+            sceneShader->CreateUniform(UNIFORM_MODELVIEWMATRIX);
             sceneShader->CreateUniform(UNIFORM_PROJMATRIX);
-            sceneShader->CreateUniform(UNIFORM_MODELMATRIX);
             sceneShader->CreateUniform(UNIFORM_TEXSAMPLER);
             sceneShader->CreateMaterialUniform(UNIFORM_MATERIAL);
             sceneShader->CreateUniform(UNIFORM_AMBIENTLIGHT);
@@ -44,7 +42,7 @@ namespace hpms
             return sceneShader;
         }
 
-        inline static Shader* CreateLayersSceneShader()
+        inline static Shader* CreatePictureShader()
         {
             std::string vertCode = hpms::ReadFile(SHADER_FILE_PICTURE_VERT);
             std::string fragCode = hpms::ReadFile(SHADER_FILE_PICTURE_FRAG);
@@ -60,103 +58,104 @@ namespace hpms
             return layerShader;
         }
 
-        inline static void RenderScene(Window* window, Camera* camera, Scene* scene,
-                                       Shader* scene3DShader, Shader* layerShader, bool gui, Renderer* renderer)
+        inline static Shader* CreateDepthShader()
         {
-            renderer->ClearAllBuffers();
+            std::string vertCode = hpms::ReadFile(SHADER_FILE_DEPTHMASK_VERT);
+            std::string fragCode = hpms::ReadFile(SHADER_FILE_DEPTHMASK_FRAG);
+            Shader* depthShader = CGAPIManager::Instance().CreateNewShader();
+            depthShader->CreateVS(vertCode);
+            depthShader->CreateFS(fragCode);
+            depthShader->Link();
+
+            depthShader->CreateUniform(UNIFORM_TEXSAMPLER);
+            depthShader->CreateUniform(UNIFORM_PROJMATRIX);
+            depthShader->CreateUniform(UNIFORM_ZNEAR);
+            depthShader->CreateUniform(UNIFORM_ZFAR);
+            return depthShader;
+        }
+
+        inline static void
+        RenderScene(Scene* scene, Window* window, Camera* camera, Shader* scene3DShader, Renderer* renderer, bool gui)
+        {
+            scene3DShader->Bind();
 
 
-            // Render pass.
-            for (float vDepth : scene->GetRenderQueue().depthBuckets)
+            glm::mat4 projMatrix = window->GetProjMatrix();
+
+            scene3DShader->SetUniform(UNIFORM_PROJMATRIX, projMatrix);
+            scene3DShader->SetUniform(UNIFORM_DIFFUSEINTENSITY, gui ? 1.0f : 0.1f);
+            scene3DShader->SetUniform(UNIFORM_AMBIENTLIGHT, scene->GetAmbientLight());
+
+            renderer->ModelsDraw(scene->GetItemsMap(), scene3DShader, camera, window, RenderCallback);
+
+            scene3DShader->Unbind();
+        }
+
+        inline static void RenderPictures(Scene* scene, Shader* pictureShader, Renderer* renderer, bool foreground)
+        {
+            pictureShader->Bind();
+
+            pictureShader->SetUniform(UNIFORM_TEXSAMPLER, 0);
+            if (foreground)
             {
-
-                std::unordered_map<unsigned int, std::vector<RenderObject*>>& renderObjects = scene->GetRenderQueue().elements[vDepth];
-
-                // Render entities.
-                if (!renderObjects[OBJ_TYPE_ENTITY].empty())
+                for (Picture* const& pic : scene->GetForePictures())
                 {
-
-                    scene3DShader->Bind();
-
-
-                    glm::mat4 viewMatrix = camera->GetViewMatrix();
-                    glm::mat4 projMatrix = window->GetProjMatrix();
-
-                    scene3DShader->SetUniform(UNIFORM_VIEWMATRIX, viewMatrix);
-                    scene3DShader->SetUniform(UNIFORM_PROJMATRIX, projMatrix);
-                    scene3DShader->SetUniform(UNIFORM_DIFFUSEINTENSITY, gui ? 1.0f : 0.1f);
-                    scene3DShader->SetUniform(UNIFORM_AMBIENTLIGHT, scene->GetAmbientLight());
-                    scene3DShader->SetUniform(UNIFORM_TEXSAMPLER, 0);
-
-                    std::unordered_map<Mesh, std::vector<Entity*>, MeshHasher, MeshEqual> meshesToEntitiesMap;
-
-                    for (RenderObject* ro : renderObjects[OBJ_TYPE_ENTITY])
-                    {
-                        if (ro->IsVisible())
-                        {
-                            Entity* entity = dynamic_cast<Entity*>(ro);
-                            for (Mesh mesh : entity->GetModelItem()->GetMeshes())
-                            {
-                                meshesToEntitiesMap[mesh].push_back(entity);
-                            }
-                        }
-
-
-                        renderer->ModelsDraw(meshesToEntitiesMap, scene3DShader, RenderCallback);
-
-
-                    }
-
-                    scene3DShader->Unbind();
-
+                    pictureShader->SetUniform(UNIFORM_ALPHA, pic->GetAlpha());
+                    pictureShader->SetUniform(UNIFORM_X, pic->GetX());
+                    pictureShader->SetUniform(UNIFORM_Y, pic->GetY());
+                    renderer->QuadsDraw(pic->GetImagePath());
                 }
-                // Render layers.
-                if (!renderObjects[OBJ_TYPE_LAYER].empty())
+            } else
+            {
+                if (scene->GetBackPicture())
                 {
-                    layerShader->Bind();
-
-                    layerShader->SetUniform(UNIFORM_TEXSAMPLER, 0);
-
-                    for (RenderObject* ro : renderObjects[OBJ_TYPE_LAYER])
-                    {
-                        if (ro->IsVisible())
-                        {
-                            LayerPicture* picture = dynamic_cast<LayerPicture*>(ro);
-
-                            layerShader->SetUniform(UNIFORM_ALPHA, picture->GetAlpha());
-                            layerShader->SetUniform(UNIFORM_X, picture->GetX());
-                            layerShader->SetUniform(UNIFORM_Y, picture->GetY());
-                            renderer->QuadsDraw(picture->GetImagePath());
-                        }
-                    }
-
-
-                    layerShader->Unbind();
+                    renderer->QuadsDraw(scene->GetBackPicture()->GetImagePath());
                 }
-
-                renderer->ClearDepthBuffer();
-
             }
+            pictureShader->Unbind();
         }
 
 
+        inline static void RenderDepthMask(Scene* scene, Window* window, Shader* depthShader, Renderer* renderer)
+        {
+            depthShader->Bind();
+            depthShader->SetUniform(UNIFORM_TEXSAMPLER, 0);
+            depthShader->SetUniform(UNIFORM_PROJMATRIX, window->GetProjMatrix());
+            depthShader->SetUniform(UNIFORM_ZNEAR, window->GetPerspective().zNear);
+            depthShader->SetUniform(UNIFORM_ZFAR, window->GetPerspective().zFar);
+            if (scene->GetDepthPicture())
+            {
+                renderer->QuadsDraw(scene->GetDepthPicture()->GetImagePath());
+            }
+            depthShader->Unbind();
+        }
+
     private:
-        inline static void RenderCallback(Entity* entity, Shader* shader)
+
+
+        inline static void RenderCallback(Entity* entity, Shader* shader, Camera* camera, Window* window)
         {
 
+
+            // Model view matrix.
             glm::mat4 modelMatrix = Transformation::BuildModelMatrix(entity);
-            shader->SetUniform(UNIFORM_MODELMATRIX, modelMatrix);
+            glm::mat4 viewMatrix = camera->GetViewMatrix();
+            glm::mat4 modelViewMatrix = viewMatrix * modelMatrix;
+            shader->SetUniform(UNIFORM_MODELVIEWMATRIX, modelViewMatrix);
 
             // Animation management.
             if (!entity->GetModelItem()->GetAnimations().empty() &&
                 entity->GetAnimCurrentIndex() < entity->GetModelItem()->GetAnimations().size())
             {
-                Animation anim = entity->GetModelItem()->GetAnimations()[entity->GetAnimCurrentIndex()];
-                Frame frame = anim.GetFrames()[entity->GetAnimCurrentFrameIndex()];
-                const glm::mat4* jointMatrices = &(frame.frameTransformations[0].jointMatrix);
-                shader->SetUniform(UNIFORM_JOINTSMATRIX, frame.frameTransformations.size(), jointMatrices);
+
+                const Animation* anim = entity->GetModelItem()->GetAnimationWithIndex(
+                        entity->GetAnimCurrentIndex());
+                const Frame* frame = anim->GetFrameWithIndex(entity->GetAnimCurrentFrameIndex());
+                const glm::mat4* jointMatrices = &(frame->frameTransformations[0].jointMatrix);
+                shader->SetUniform(UNIFORM_JOINTSMATRIX, frame->frameTransformations.size(), jointMatrices);
 
             }
+
         }
 
 

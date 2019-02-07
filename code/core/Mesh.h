@@ -26,6 +26,7 @@ namespace hpms
         std::vector<unsigned int> indices;
         std::vector<unsigned int> jointIndices;
         std::vector<float> weights;
+        float boundingRadious;
         unsigned int textured; // Type bool cannot be serialized, use uint instead.
         Material material;
         std::string name;
@@ -48,7 +49,8 @@ namespace hpms
                 PODS_OPT(material),
                 PODS_OPT(name),
                 PODS_OPT(vertexCount),
-                PODS_OPT(key)
+                PODS_OPT(key),
+                PODS_OPT(boundingRadious)
         )
 
         inline const std::vector<float>& GetPositions() const
@@ -161,36 +163,25 @@ namespace hpms
             Mesh::key = key;
         }
 
-        bool operator==(const Mesh& rhs) const
+        inline bool operator==(const Mesh& rhs) const
         {
             return key.compare(rhs.GetKey()) == 0;
         }
 
-        bool operator!=(const Mesh& rhs) const
+        inline bool operator!=(const Mesh& rhs) const
         {
             return !(rhs == *this);
         }
-    };
 
-
-    struct MeshHasher
-    {
-        std::size_t operator()(const Mesh& m) const
+        inline float GetBoundingRadious() const
         {
-            size_t res = 17;
-            res = res * 31 + std::hash<std::string>()(m.GetKey());
-            return res;
+            return boundingRadious;
+        }
+
+        inline void SetBoundingRadious(float boundingRadious)
+        {
+            Mesh::boundingRadious = boundingRadious;
         }
     };
-
-    struct MeshEqual
-    {
-
-        bool operator()(const Mesh& m1, const Mesh& m2) const
-        {
-            return m1.GetKey().compare(m2.GetKey()) == 0;
-        }
-    };
-
 
 }

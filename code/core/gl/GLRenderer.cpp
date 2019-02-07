@@ -32,7 +32,7 @@ void hpms::GLRenderer::QuadMeshInit()
     LOG_DEBUG(std::string("Pictures quad initialized.").c_str());
 }
 
-void hpms::GLRenderer::MeshInit(hpms::Mesh& mesh)
+void hpms::GLRenderer::MeshInit(const hpms::Mesh& mesh)
 {
 
     // Generate and assign VAO.
@@ -102,49 +102,53 @@ void hpms::GLRenderer::MeshInit(hpms::Mesh& mesh)
 }
 
 void
-hpms::GLRenderer::ModelsDraw(std::unordered_map<Mesh, std::vector<Entity*>, MeshHasher, MeshEqual> meshesToEntitiesMap,
-                             Shader* s, std::function<void(Entity*, Shader*)> pipelineCallback)
+hpms::GLRenderer::ModelsDraw(const std::unordered_map<const AdvModelItem*, std::vector<Entity*>>& modelToEntitiesMap,
+                             Shader* s, Camera* c, Window* w,
+                             std::function<void(Entity*, Shader*, Camera*, Window* w)> pipelineCallback)
 {
 
 
-    for (auto& entry : meshesToEntitiesMap)
+    for (const auto& entry : modelToEntitiesMap)
     {
-        Mesh mesh = entry.first;
+        const AdvModelItem* item = entry.first;
 
-        s->SetUniform(UNIFORM_MATERIAL, mesh.GetMaterial());
-        Texture* tex = nullptr;
-        if (mesh.IsTextured())
+        for (const Mesh& mesh : item->GetMeshes())
         {
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, texBufferMap[mesh.GetMaterial().GetTextureName()]);
+
+            s->SetUniform(UNIFORM_MATERIAL, mesh.GetMaterial());
+            if (mesh.IsTextured())
+            {
+                glActiveTexture(GL_TEXTURE0);
+                glBindTexture(GL_TEXTURE_2D, texBufferMap[mesh.GetMaterial().GetTextureName()]);
+            }
+
+            // Draw the mesh.
+            glBindVertexArray(vaoMap[mesh.GetKey()]);
+
+            glEnableVertexAttribArray(0);
+            glEnableVertexAttribArray(1);
+            glEnableVertexAttribArray(2);
+            glEnableVertexAttribArray(3);
+            glEnableVertexAttribArray(4);
+
+            for (Entity* entity : entry.second)
+            {
+                pipelineCallback(entity, s, c, w);
+                glDrawElements(GL_TRIANGLES, mesh.GetVertexCount(), GL_UNSIGNED_INT, nullptr);
+            }
+
+
+
+            // Restore state.
+            glDisableVertexAttribArray(4);
+            glDisableVertexAttribArray(3);
+            glDisableVertexAttribArray(2);
+            glDisableVertexAttribArray(1);
+            glDisableVertexAttribArray(0);
+            glBindVertexArray(0);
+
+            glBindTexture(GL_TEXTURE_2D, 0);
         }
-
-        // Draw the mesh.
-        glBindVertexArray(vaoMap[mesh.GetKey()]);
-
-        glEnableVertexAttribArray(0);
-        glEnableVertexAttribArray(1);
-        glEnableVertexAttribArray(2);
-        glEnableVertexAttribArray(3);
-        glEnableVertexAttribArray(4);
-
-        for (Entity* entity : entry.second)
-        {
-            pipelineCallback(entity, s);
-            glDrawElements(GL_TRIANGLES, mesh.GetVertexCount(), GL_UNSIGNED_INT, nullptr);
-        }
-
-
-
-        // Restore state.
-        glDisableVertexAttribArray(4);
-        glDisableVertexAttribArray(3);
-        glDisableVertexAttribArray(2);
-        glDisableVertexAttribArray(1);
-        glDisableVertexAttribArray(0);
-        glBindVertexArray(0);
-
-        glBindTexture(GL_TEXTURE_2D, 0);
     }
 }
 
@@ -167,7 +171,7 @@ void hpms::GLRenderer::QuadsDraw(const std::string& textureName)
 
 }
 
-void hpms::GLRenderer::MeshCleanup(hpms::Mesh& mesh)
+void hpms::GLRenderer::MeshCleanup(const hpms::Mesh& mesh)
 {
     glDisableVertexAttribArray(0);
 
@@ -181,7 +185,7 @@ void hpms::GLRenderer::MeshCleanup(hpms::Mesh& mesh)
     LOG_DEBUG(std::string("Mesh with key " + mesh.GetKey() + " cleanup done.").c_str());
 }
 
-void hpms::GLRenderer::TextureInit(hpms::Texture& text)
+void hpms::GLRenderer::TextureInit(const hpms::Texture& text)
 {
     // Texture binding.
     unsigned int id;
@@ -200,7 +204,7 @@ void hpms::GLRenderer::TextureInit(hpms::Texture& text)
     LOG_DEBUG(std::string("Texture with name " + text.GetPath() + " initialized.").c_str());
 }
 
-void hpms::GLRenderer::TextureCleanup(hpms::Texture& text)
+void hpms::GLRenderer::TextureCleanup(const hpms::Texture& text)
 {
     unsigned int id = texBufferMap[text.GetPath()];
     glDeleteTextures(1, &id);

@@ -6,11 +6,11 @@
 
 #include <glm/detail/type_quat.hpp>
 #include <vector>
-#include "../common/Utils.h"
-#include "Actor.h"
-#include "AdvModelItem.h"
-#include "RenderObject.h"
-#include "Names.h"
+#include "../../common/Utils.h"
+#include "../Actor.h"
+#include "../AdvModelItem.h"
+#include "../RenderObject.h"
+#include "../Names.h"
 
 namespace hpms
 {
@@ -27,8 +27,7 @@ namespace hpms
         unsigned int animCurrentIndex;
         bool animPlay;
         bool animLoop;
-        AdvModelItem* modelItem;
-        float virtualDepth;
+        AdvModelItem* modelItem{};
 
     public:
 
@@ -39,18 +38,18 @@ namespace hpms
                    position(0.0, 0.0, 0.0),
                    scale(1.0, 1.0, 1.0),
                    visible(true),
-                   virtualDepth(0.0)
+                   rotation(glm::angleAxis(0.0f, glm::vec3(0.0f, 1.0f, 0.0f)))
         {}
 
-        Entity(AdvModelItem* modelItem) : animCurrentFrameIndex(0),
-                                          animCurrentIndex(0),
-                                          animPlay(false),
-                                          animLoop(false),
-                                          position(0.0, 0.0, 0.0),
-                                          scale(1.0, 1.0, 1.0),
-                                          visible(true),
-                                          virtualDepth(0.0),
-                                          modelItem(modelItem)
+        explicit Entity(AdvModelItem* modelItem) : animCurrentFrameIndex(0),
+                                                   animCurrentIndex(0),
+                                                   animPlay(false),
+                                                   animLoop(false),
+                                                   position(0.0, 0.0, 0.0),
+                                                   scale(1.0, 1.0, 1.0),
+                                                   visible(true),
+                                                   modelItem(modelItem),
+                                                   rotation(glm::angleAxis(0.0f, glm::vec3(0.0f, 1.0f, 0.0f)))
         {}
 
         inline const glm::vec3& GetPosition() const override
@@ -155,15 +154,6 @@ namespace hpms
             Entity::animCurrentIndex = animCurrentIndex;
         }
 
-        inline float GetVirtualDepth() const override
-        {
-            return virtualDepth;
-        }
-
-        inline void SetVirtualDepth(float virtualDepth)
-        {
-            Entity::virtualDepth = virtualDepth;
-        }
 
         inline unsigned int GetTypeId() const override
         {

@@ -20,19 +20,20 @@ namespace hpms
 
         void QuadMeshInit() override;
 
-        void MeshInit(hpms::Mesh& mesh) override;
+        void MeshInit(const hpms::Mesh& mesh) override;
 
         void
-        ModelsDraw(std::unordered_map<Mesh, std::vector<Entity*>, MeshHasher, MeshEqual> meshesToEntitiesMap, Shader* s,
-                   std::function<void(Entity*, Shader*)> pipelineCallback) override;
+        ModelsDraw(const std::unordered_map<const AdvModelItem*, std::vector<Entity*>>& modelToEntitiesMap,
+                   Shader* s, Camera* c, Window* w,
+                   std::function<void(Entity*, Shader*, Camera*, Window* w)> pipelineCallback) override;
 
         void QuadsDraw(const std::string& textureName) override;
 
-        void MeshCleanup(hpms::Mesh& mesh) override;
+        void MeshCleanup(const hpms::Mesh& mesh) override;
 
-        void TextureInit(hpms::Texture& text) override;
+        void TextureInit(const hpms::Texture& text) override;
 
-        void TextureCleanup(hpms::Texture& text) override;
+        void TextureCleanup(const hpms::Texture& text) override;
 
         void QuadMeshCleanup() override;
 

@@ -13,11 +13,10 @@
 #include "../../common/Utils.h"
 #include "../Names.h"
 
-#define TRANSPOSE_MATRICES
 #ifndef TRANSPOSE_MATRICES
 #define TRANSPOSE GL_FALSE
 #else
-#define TRANSPOSE GL_FALSE
+#define TRANSPOSE GL_TRUE
 #endif
 
 namespace hpms

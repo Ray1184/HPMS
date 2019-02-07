@@ -216,6 +216,12 @@ void hpms::AssimpImporter::ProcessMesh(aiMesh* aiMesh, std::vector<hpms::Mesh>& 
         }
     }
 
+    float boundingRad = 0.0f;
+    for (float p : positions)
+    {
+        boundingRad = std::max(std::abs(p), boundingRad);
+    }
+
     // Assemble mesh
     Mesh mesh;
     mesh.SetPositions(positions);
@@ -225,6 +231,9 @@ void hpms::AssimpImporter::ProcessMesh(aiMesh* aiMesh, std::vector<hpms::Mesh>& 
     mesh.SetJointIndices(jointIndices);
     mesh.SetWeights(weights);
     mesh.SetVertexCount(indices.size());
+    mesh.SetBoundingRadious(boundingRad);
+
+
 
     Material material;
     unsigned int materialIdx = aiMesh->mMaterialIndex;

@@ -9,7 +9,7 @@
 #include <glm/gtx/euler_angles.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include "AdvModelItem.h"
-#include "Entity.h"
+#include "items/Entity.h"
 
 
 namespace hpms

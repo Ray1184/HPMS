@@ -26,26 +26,22 @@
 #define UNIFORM_HASTEXTURE_SFX ".hasTexture"
 
 // Simple shader uniform list.
-#define UNIFORM_VIEWMATRIX "viewMatrix"
-#define UNIFORM_PROJMATRIX "projectionMatrix"
-#define UNIFORM_PROJMODELMATRIX "projModelMatrix"
-#define UNIFORM_MODELMATRIX "modelMatrix"
-#define UNIFORM_TEXSAMPLER "textureSampler"
-#define UNIFORM_NORMALSAMPLER "normalSampler"
-#define UNIFORM_NUMCOLS "numCols"
-#define UNIFORM_NUMROWS "numRows"
-#define UNIFORM_AMBIENTLIGHT "ambientLight"
-#define UNIFORM_COLOUR "colour"
-#define UNIFORM_HASTEXTURE "hasTexture"
-#define UNIFORM_MATERIAL "material"
-#define UNIFORM_JOINTSMATRIX "jointsMatrix"
-#define UNIFORM_ZNEAR "zNear"
-#define UNIFORM_ZFAR "zFar"
-#define UNIFORM_ALPHA "alpha"
-#define UNIFORM_DIFFUSEINTENSITY "diffuseIntensity"
-#define UNIFORM_X "x"
-#define UNIFORM_Y "y"
-#define UNIFORM_GLOBALALPHA "globalAlpha"
+#define UNIFORM_MODELVIEWMATRIX "u_ModelViewMatrix"
+#define UNIFORM_PROJMATRIX "u_ProjectionMatrix"
+#define UNIFORM_TEXSAMPLER "u_TextureSampler"
+#define UNIFORM_NORMALSAMPLER "u_NormalSampler"
+#define UNIFORM_NUMCOLS "u_NumCols"
+#define UNIFORM_NUMROWS "u_NumRows"
+#define UNIFORM_AMBIENTLIGHT "u_AmbientLight"
+#define UNIFORM_MATERIAL "u_Material"
+#define UNIFORM_JOINTSMATRIX "u_JointsMatrix"
+#define UNIFORM_ZNEAR "u_ZNear"
+#define UNIFORM_ZFAR "u_ZFar"
+#define UNIFORM_ALPHA "u_Alpha"
+#define UNIFORM_DIFFUSEINTENSITY "u_DiffuseIntensity"
+#define UNIFORM_X "u_X"
+#define UNIFORM_Y "u_Y"
+#define UNIFORM_GLOBALALPHA "u_GlobalAlpha"
 
 #define SHADER_FILE_PARTICLES_VERT SHADERS_FOLDER "Particles.vert"
 #define SHADER_FILE_PARTICLES_FRAG SHADERS_FOLDER "Particles.frag"
@@ -60,4 +56,5 @@
 
 // Object types.
 #define OBJ_TYPE_ENTITY 0
-#define OBJ_TYPE_LAYER 1
+#define OBJ_TYPE_PICTURE 1
+#define OBJ_TYPE_NODE 2

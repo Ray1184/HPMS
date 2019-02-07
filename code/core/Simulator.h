@@ -12,7 +12,7 @@
 #include "../common/Utils.h"
 #include "CGAPIManager.h"
 
-#define TARGET_FPS 60.0 // Frame per seconds.
+#define TARGET_FPS 6000.0 // Frame per seconds.
 
 // Dynamic updated disabled.
 /*
@@ -24,6 +24,11 @@ namespace hpms
     class Timer
     {
     public:
+        Timer() : lastLoopTime(0.0)
+        {
+
+        }
+
         inline void Init()
         {
             lastLoopTime = GetTime();
@@ -31,11 +36,15 @@ namespace hpms
 
         inline double GetTime()
         {
-            return std::chrono::duration_cast<std::chrono::nanoseconds>
-                           (std::chrono::high_resolution_clock::now().time_since_epoch()).count() / 1000000000.0;
+
+
+            auto tse = std::chrono::system_clock::now().time_since_epoch();
+            auto nowNs = std::chrono::duration_cast<std::chrono::nanoseconds>(tse);
+            return nowNs.count() / 1000000000.0;
+
         }
 
-        inline float GetElapsedTime()
+        inline float UpdateElapsedTime()
         {
             double time = GetTime();
             float elapsedTime = (float) (time - lastLoopTime);
@@ -61,7 +70,9 @@ namespace hpms
         Simulator(const std::string& ptitle, unsigned int width, unsigned int height, bool vSync, Options& options,
                   Perspective& perspective, CustomLogic* plogic) :
                 title(ptitle),
-                logic(plogic)
+                logic(plogic),
+                lastFps(0.0),
+                fps(0)
         {
             window = CGAPIManager::Instance().CreateNewWindow(ptitle, width, height, vSync, options, perspective);
             logic = plogic;
@@ -110,10 +121,11 @@ namespace hpms
 
                 // Dynamic updated disabled.
                 /*
-                elapsedTime = timer.GetElapsedTime();
+                elapsedTime = timer.UpdateElapsedTime();
                 accumulator += elapsedTime;
                  */
 
+                timer.UpdateElapsedTime();
                 Input();
                 Update();
 
@@ -129,7 +141,7 @@ namespace hpms
 
                 if (!window->IsVSync())
                 {
-                    Sync();
+                    //Sync();
                 }
             }
             LOG_DEBUG("Main loop stopped.");
@@ -176,9 +188,9 @@ namespace hpms
         {
             if (window->GetOptions().showFps)
             {
-                // TODO - FPS Show doesn't work.
                 fps++;
-                if (timer.GetLastLoopTime() - lastFps > 1)
+                double currentFps = timer.GetLastLoopTime();
+                if (currentFps - lastFps > 1)
                 {
 
                     lastFps = timer.GetLastLoopTime();

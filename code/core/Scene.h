@@ -5,26 +5,16 @@
 #pragma once
 
 #include <unordered_map>
-#include <typeinfo>
 #include <string>
 #include <vector>
 #include <algorithm>
 #include "AdvModelItem.h"
 #include "Mesh.h"
-#include "Entity.h"
-#include "LayerPicture.h"
+#include "items/Entity.h"
+#include "items/Picture.h"
 
 namespace hpms
 {
-
-    struct RenderQueue
-    {
-        std::vector<float> depthBuckets;
-
-        std::vector<RenderObject*> allRenderObjects;
-
-        std::unordered_map<float, std::unordered_map<unsigned int, std::vector<RenderObject*>>> elements;
-    };
 
 
     class Scene
@@ -32,61 +22,32 @@ namespace hpms
     public:
         inline void AddRenderObject(RenderObject* obj)
         {
-            if (std::find(renderQueue.allRenderObjects.begin(), renderQueue.allRenderObjects.end(), obj) ==
-                renderQueue.allRenderObjects.end())
+
+            if (auto* entity = dynamic_cast<Entity*>(obj))
             {
-                renderQueue.allRenderObjects.push_back(obj);
 
-                if (auto* entity = dynamic_cast<Entity*>(obj))
-                {
-                    for (Mesh mesh : entity->GetModelItem()->GetMeshes())
-                    {
-                        if (std::find(meshes.begin(), meshes.end(), mesh) == meshes.end())
-                        {
-                            meshes.push_back(mesh);
-                        }
+                itemsMap[entity->GetModelItem()].push_back(entity);
 
-                    }
-                }
-
-                if (auto* pic = dynamic_cast<LayerPicture*>(obj))
-                {
-                    if (std::find(picturePaths.begin(), picturePaths.end(), pic->GetImagePath()) == picturePaths.end())
-                    {
-                        picturePaths.push_back(pic->GetImagePath());
-                    }
-                }
-            }
-        }
-
-
-        inline void UpdateBuckets()
-        {
-            renderQueue.depthBuckets.clear();
-            renderQueue.elements.clear();
-            for (RenderObject* obj : renderQueue.allRenderObjects)
-            {
-                if (std::find(renderQueue.depthBuckets.begin(), renderQueue.depthBuckets.end(),
-                              obj->GetVirtualDepth()) == renderQueue.depthBuckets.end())
-                {
-                    renderQueue.depthBuckets.push_back(obj->GetVirtualDepth());
-                }
-                renderQueue.elements[obj->GetVirtualDepth()][obj->GetTypeId()].push_back(obj);
             }
 
-            std::sort(renderQueue.depthBuckets.begin(), renderQueue.depthBuckets.end(), std::greater<float>());
-        }
+            if (auto* pic = dynamic_cast<Picture*>(obj))
+            {
+                if (pic->GetMode() == PictureMode::FOREGROUND)
+                {
+                    if (std::find(forePictures.begin(), forePictures.end(), pic) == forePictures.end())
+                    {
+                        forePictures.push_back(pic);
+                    }
+                } else if (pic->GetMode() == PictureMode::BACKGROUND)
+                {
+                    backPicture = pic;
+                } else if (pic->GetMode() == PictureMode::DEPTH_MASK)
+                {
+                    depthPicture = pic;
+                }
+            }
 
-        inline RenderQueue& GetRenderQueue()
-        {
-            return renderQueue;
         }
-
-        inline const std::vector<Mesh>& GetMeshes() const
-        {
-            return meshes;
-        }
-
 
         inline const glm::vec3& GetAmbientLight() const
         {
@@ -99,15 +60,33 @@ namespace hpms
             Scene::ambientLight = ambientLight;
         }
 
-        inline const std::vector<std::string>& GetPicturePaths() const
+
+        inline const std::vector<Picture*>& GetForePictures() const
         {
-            return picturePaths;
+            return forePictures;
+        }
+
+        inline Picture* GetBackPicture() const
+        {
+            return backPicture;
+        }
+
+        inline Picture* GetDepthPicture() const
+        {
+            return depthPicture;
+        }
+
+        inline const std::unordered_map<const AdvModelItem*, std::vector<Entity*>>& GetItemsMap() const
+        {
+            return itemsMap;
         }
 
     private:
-        RenderQueue renderQueue;
-        std::vector<Mesh> meshes;
-        std::vector<std::string> picturePaths;
+
+        std::unordered_map<const hpms::AdvModelItem*, std::vector<hpms::Entity*>> itemsMap;
+        std::vector<Picture*> forePictures;
+        Picture* backPicture;
+        Picture* depthPicture;
         glm::vec3 ambientLight;
     };
 }
