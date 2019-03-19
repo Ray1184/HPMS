@@ -18,11 +18,11 @@ namespace hpms
     class SceneNode : public RenderObject
     {
     public:
-        SceneNode(const std::string& pname) : name(pname),
-                                              parent(nullptr),
-                                              localTransform(glm::mat4(1.0)),
-                                              worldTransform(glm::mat4(1.0))
-        {}
+        explicit SceneNode(const std::string& pname) : name(pname),
+                                                       parent(nullptr),
+                                                       actor(nullptr),
+                                                       localTransform(glm::mat4(1.0)),
+                                                       worldTransform(glm::mat4(1.0)) {}
 
         ~SceneNode()
         {
@@ -32,15 +32,53 @@ namespace hpms
             }
         }
 
+        inline void AddChild(SceneNode* child)
+        {
+            children.push_back(child);
+            child->parent = this;
+        }
+
+        inline void UpdateTree()
+        {
+            if (parent != nullptr)
+            {
+                worldTransform = parent->worldTransform * localTransform;
+            } else
+            {
+                worldTransform = localTransform;
+            }
+
+            for (SceneNode* child : children)
+            {
+                child->UpdateTree();
+            }
+        }
+
+        inline SceneNode* FindInTree(const std::string& name)
+        {
+            SceneNode* res = nullptr;
+            if (this->name.compare(name) == 0)
+            {
+                res = this;
+            } else
+            {
+                for (SceneNode* child : this->children)
+                {
+                    res = FindInTree(name);
+                    if (res != nullptr)
+                    {
+                        break;
+                    }
+                }
+            }
+            return res;
+        }
+
         inline SceneNode* GetParent() const
         {
             return parent;
         }
 
-        inline void SetParent(SceneNode* parent)
-        {
-            SceneNode::parent = parent;
-        }
 
         inline Actor* GetActor() const
         {
@@ -62,6 +100,7 @@ namespace hpms
             return children;
         }
 
+
         inline const glm::mat4& GetLocalTransform() const
         {
             return localTransform;
@@ -77,15 +116,11 @@ namespace hpms
             return false;
         }
 
-        inline float GetVirtualDepth() const override
-        {
-            return 0;
-        }
-
         inline unsigned int GetTypeId() const override
         {
             return OBJ_TYPE_NODE;
         }
+
 
     private:
         std::string name;

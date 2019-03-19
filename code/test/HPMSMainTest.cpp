@@ -32,7 +32,7 @@ public:
 
         testEntity = new Entity(testModel);
         testEntity->SetScale(glm::vec3(0.2, 0.2, 0.2));
-        testEntity->SetPosition(glm::vec3(-0.0f, -1, 0));
+        testEntity->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
         testEntity->SetRotation(glm::angleAxis(glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
 
 
@@ -42,11 +42,12 @@ public:
         testEntity2->SetRotation(glm::angleAxis(glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
 
         pic = new Picture("data/resources/textures/B01_B.png", BACKGROUND);
-
+        depthMask = new Picture("data/resources/textures/B01_D.png", DEPTH_MASK);
 
         scene->AddRenderObject(testEntity);
-        scene->AddRenderObject(testEntity2);
+        //scene->AddRenderObject(testEntity2);
         scene->AddRenderObject(pic);
+        scene->AddRenderObject(depthMask);
         for (int i = 0; i < 20; i++)
         {
             Entity* testEntityN = new Entity(testModel);
@@ -54,12 +55,12 @@ public:
             testEntityN->SetPosition(glm::vec3((i / 10.0f) - 3, -1, (i / 10.0f) - 3));
             testEntityN->SetRotation(glm::angleAxis(glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
             testEntityN->SetAnimCurrentFrameIndex(0);
-            scene->AddRenderObject(testEntityN);
+            //scene->AddRenderObject(testEntityN);
         }
         scene->SetAmbientLight(glm::vec3(2, 2, 2));
         cam = new Camera();
-        cam->SetPosition(glm::vec3(0, 2, 3));
-        cam->SetRotation(glm::vec3(glm::radians(20.0), glm::radians(0.0), 0));
+        cam->SetPosition(glm::vec3(3.5, 1, -3));
+        cam->SetRotation(glm::vec3(glm::radians(0.0), glm::radians(-120.0), 0));
         cam->UpdateViewMatrix();
         pipeline->Init(window, scene, renderer);
         quit = false;
@@ -116,7 +117,6 @@ public:
 
     virtual void Render(Window* window) override
     {
-
         pipeline->Render(window, scene, cam, renderer);
     }
 
@@ -140,6 +140,7 @@ private:
     Entity* testEntity;
     Entity* testEntity2;
     Picture* pic;
+    Picture* depthMask;
     Renderer* renderer;
     Pipeline* pipeline;
     Scene* scene;
@@ -151,7 +152,7 @@ private:
 
 int SimulateNew();
 
-int main()
+int main0()
 {
 
     return SimulateNew();

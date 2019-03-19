@@ -15,12 +15,7 @@ namespace hpms
 
         virtual void Input(Window* window) = 0;
 
-        virtual void Update() = 0;
-
-        // Dynamic updated disabled.
-        /*
-        virtual void UpdateRealTime(float tpf) = 0;
-         */
+        virtual void Update(Window* window) = 0;
 
         virtual void Render(Window* window) = 0;
 

@@ -1,15 +1,14 @@
 #version 330 core
 
-//in vec2 uvTex;
+in vec2 a_UvTex;
 
-out vec3 color;
+out vec4 a_Color;
 
-//uniform sampler2D textureSampler;
-//uniform float alpha;
+uniform sampler2D u_TextureSampler;
+uniform float u_Alpha;
 
 void main()
 {
-	//vec4 tempColor = texture(textureSampler, uvTex);
-	//color = vec4(tempColor.x, tempColor.y, tempColor.z, tempColor.w * alpha);
-	color = vec3(0.0, 1.0, 0.0);
+	vec4 tempColor = texture(u_TextureSampler, a_UvTex);
+	a_Color = vec4(tempColor.x, tempColor.y, tempColor.z, tempColor.w * u_Alpha);
 }

@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.7)
 project(HPMS)
 
-
 set(CMAKE_CXX_STANDARD 14)
 
 set(RT_SOURCE_FILES
@@ -38,10 +37,18 @@ set(RT_SOURCE_FILES
         code/core/PipelineUtils.h
         code/core/gl/GLRenderer.h
         code/core/gl/GLRenderer.cpp
-        code/core/Entity.h
+        code/core/items/Entity.h
         code/core/RenderObject.h
-        code/core/LayerPicture.h
-        code/test/HPMSMainTest.cpp)
+        code/core/items/Picture.h
+        code/core/SceneNode.h
+        code/core/FrustumCullingCalculator.h
+        code/runtime/vm/LuaVM.h
+        code/runtime/vm/LuaRegister.h
+        code/runtime/vm/LuaExtensions.h
+        code/runtime/HPMSLogic.h
+        code/runtime/GameState.h
+        code/runtime/states/R25DGameState.h
+        code/runtime/input/KeyEvent.h)
 
 set(TOOLS_SOURCE_FILES
         thirdparty/GLAD/src/glad.c
@@ -62,8 +69,7 @@ set(TOOLS_SOURCE_FILES
         code/core/Renderer.h
         code/core/Texture.h
         code/core/ResourceCache.h
-        code/common/FileSystem.cpp
-        code/tools/AssimpToHDATConverterMain.cpp)
+        code/common/FileSystem.cpp)
 
 set(dir ${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -128,20 +134,19 @@ include_directories(thirdparty/PHYSFS/include)
 include_directories(thirdparty/PODS/include)
 include_directories(thirdparty/ASSIMP/include)
 include_directories(thirdparty/RAPIDJSON/include)
-
+include_directories(thirdparty/LUABRIDGE/include)
 
 # Copy all resources to bin folder
 file(COPY data DESTINATION ${dir}/bin)
-
 
 # Add libraries dependencies
 add_subdirectory(dependencies)
 
 # Build the main runtime
-add_executable(HPMS ${RT_SOURCE_FILES})
+add_executable(HPMS ${RT_SOURCE_FILES} code/runtime/Main.cpp)
 target_link_libraries(HPMS glfw physfs liblua)
 
 # Build the tools runtimes
 
-add_executable(AIToHDATConverter ${TOOLS_SOURCE_FILES})
+add_executable(AIToHDATConverter ${TOOLS_SOURCE_FILES} code/tools/AssimpToHDATConverterMain.cpp)
 target_link_libraries(AIToHDATConverter physfs glfw assimp)

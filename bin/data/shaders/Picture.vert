@@ -1,17 +1,15 @@
 #version 330 core
 
-layout(location = 0) in vec3 position;
+layout(location = 0) in vec3 l_Position;
 
+uniform float u_X;
+uniform float u_Y;
 
-uniform float x;
-uniform float y;
-
-out vec2 uvTex;
+out vec2 a_UvTex;
 
 void main()
 {
-    gl_Position = vec4(position.x + x, position.y + y, position.z, 1);
-	uvTex = (position.xy + vec2(1, 1)) / 2.0;
-
+    gl_Position = vec4(l_Position.x + u_X, l_Position.y + u_Y, l_Position.z, 1);
+	a_UvTex = (l_Position.xy + vec2(1, 1)) / 2.0;
 }
 

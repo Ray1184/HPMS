@@ -10,9 +10,14 @@
 
 namespace hpms
 {
+
+
     class Actor
     {
+
+
     public:
+
         virtual void SetPosition(const glm::vec3& position) = 0;
 
         virtual const glm::vec3& GetPosition() const = 0;
@@ -25,8 +30,6 @@ namespace hpms
 
         virtual const glm::vec3& GetScale() const = 0;
 
-        virtual void
-        AddController(std::pair<std::function<void(Actor&)>, std::function<void(Actor&, float)>> callback) = 0;
     };
 }
 

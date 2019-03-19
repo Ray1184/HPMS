@@ -150,9 +150,9 @@ namespace hpms
 
         inline void Cleanup()
         {
-            CGAPIManager::Instance().FreeWindow();
             logic->Cleanup();
             hpms::SafeDelete(logic);
+            CGAPIManager::Instance().FreeWindow();
             LOG_DEBUG("Simulator module cleanup done.");
         }
 
@@ -173,7 +173,7 @@ namespace hpms
 
         inline void Update()
         {
-            logic->Update();
+            logic->Update(window);
         }
 
         // Dynamic updated disabled.

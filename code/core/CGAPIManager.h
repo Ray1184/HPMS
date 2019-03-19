@@ -10,6 +10,8 @@
 #include "../common/Utils.h"
 #include "gl/GLWindow.h"
 #include "gl/GLShader.h"
+#include "Renderer.h"
+#include "gl/GLRenderer.h"
 
 namespace hpms
 {
@@ -38,6 +40,13 @@ namespace hpms
             return shader;
         }
 
+        inline Renderer* CreateNewRenderer()
+        {
+            // TODO - Unitil now only OpenGL is supported.
+            currentRenderer = hpms::SafeNew<hpms::GLRenderer>();
+            return currentRenderer;
+        }
+
         inline void FreeShaders()
         {
             for (Shader* shader : shadersReferences)
@@ -56,6 +65,12 @@ namespace hpms
             LOG_DEBUG("Window cleanup done.");
         }
 
+        inline void FreeRenderer()
+        {
+            hpms::SafeDelete(currentRenderer);
+            LOG_DEBUG("Renderer cleanup done.");
+        }
+
     private:
         CGAPIManager()
         {};
@@ -66,5 +81,6 @@ namespace hpms
 
         std::vector<hpms::Shader*> shadersReferences;
         hpms::Window* currentWindow;
+        hpms::Renderer* currentRenderer;
     };
 }

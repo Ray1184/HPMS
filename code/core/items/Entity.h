@@ -14,6 +14,8 @@
 
 namespace hpms
 {
+
+
     class Entity : public Actor, public RenderObject
     {
 
@@ -22,7 +24,6 @@ namespace hpms
         glm::vec3 scale;
         glm::quat rotation;
         bool visible;
-        std::vector<std::pair<std::function<void(Actor&)>, std::function<void(Actor&, float)>>> controllers;
         unsigned int animCurrentFrameIndex;
         unsigned int animCurrentIndex;
         bool animPlay;
@@ -82,12 +83,6 @@ namespace hpms
             Entity::rotation = rotation;
         }
 
-        inline void AddController(
-                std::pair<std::function<void(Actor&)>, std::function<void(Actor&, float)>> callback) override
-        {
-            controllers.push_back(callback);
-        }
-
         inline bool IsVisible() const override
         {
             return visible;
@@ -96,12 +91,6 @@ namespace hpms
         inline void SetVisible(bool visible)
         {
             Entity::visible = visible;
-        }
-
-        inline const std::vector<std::pair<std::function<void(Actor&)>, std::function<void(Actor&, float)>>>&
-        GetControllers() const
-        {
-            return controllers;
         }
 
         inline const AdvModelItem* GetModelItem() const
@@ -153,7 +142,6 @@ namespace hpms
         {
             Entity::animCurrentIndex = animCurrentIndex;
         }
-
 
         inline unsigned int GetTypeId() const override
         {

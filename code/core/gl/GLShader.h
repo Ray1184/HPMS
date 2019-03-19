@@ -26,13 +26,18 @@ namespace hpms
 
     public:
 
-        GLShader()
+        GLShader() : clear(false)
         {
             programId = glCreateProgram();
             if (!programId)
             {
                 LOG_ERROR("Error creating shader program.");
             }
+        }
+
+        virtual ~GLShader()
+        {
+            Cleanup();
         }
 
         inline void CreateUniform(const std::string& name) override
@@ -164,10 +169,14 @@ namespace hpms
 
         inline void Cleanup() override
         {
-            Unbind();
-            if (programId != 0)
+            if (!clear)
             {
-                glDeleteProgram(programId);
+                clear = true;
+                Unbind();
+                if (programId != 0)
+                {
+                    glDeleteProgram(programId);
+                }
             }
         }
 
@@ -177,6 +186,7 @@ namespace hpms
         GLuint vsId;
         GLuint fsId;
         std::unordered_map<std::string, GLuint> uniforms;
+        bool clear;
 
         inline GLuint CreateShader(const char* shaderCode, GLuint type)
         {
