@@ -176,13 +176,13 @@ void hpms::AssimpImporter::ProcessMesh(aiMesh* aiMesh, std::vector<hpms::Mesh>& 
         {
             aiBone* aiBone = aiMesh->mBones[i];
             unsigned int id = bones.size();
-            Bone bone{id, aiBone->mName.data, AIToGLMMat4(aiBone->mOffsetMatrix)};
+            Bone bone(id, aiBone->mName.data, AIToGLMMat4(aiBone->mOffsetMatrix));
             bones.push_back(bone);
             unsigned int numWeights = aiBone->mNumWeights;
             for (int j = 0; j < numWeights; j++)
             {
                 aiVertexWeight aiWeight = aiBone->mWeights[j];
-                VertexWeight vertexWeight{bone.boneId, aiWeight.mVertexId, aiWeight.mWeight};
+                VertexWeight vertexWeight(bone.boneId, aiWeight.mVertexId, aiWeight.mWeight);
                 weightSet[vertexWeight.vertexId].push_back(vertexWeight);
             }
         }
@@ -268,7 +268,7 @@ void hpms::AssimpImporter::BuildAnimationFrames(std::vector<hpms::Bone>& bones, 
             glm::mat4 boneMatrix = GetParentTransforms(animNode, i);
             boneMatrix = rootTransform * boneMatrix * bone.offsetMatrix;
 
-            FrameTransform frameTransform{boneMatrix};
+            FrameTransform frameTransform(boneMatrix);
 
 
             animatedFrame.frameTransformations.push_back(frameTransform);

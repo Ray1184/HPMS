@@ -5,10 +5,11 @@
 #pragma once
 
 #include "Window.h"
+#include "../common/HPMSObject.h"
 
 namespace hpms
 {
-    class CustomLogic
+    class CustomLogic : public HPMSObject
     {
     public:
         virtual void Init(Window* window) = 0;

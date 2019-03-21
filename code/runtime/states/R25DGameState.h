@@ -24,7 +24,7 @@ namespace hpms
 
         inline void CInit() override
         {
-
+            camera->UpdateViewMatrix();
         }
 
         inline void CUpdate() override
@@ -39,6 +39,11 @@ namespace hpms
                 clear = true;
                 hpms::SafeDelete(pipeline);
             }
+        }
+
+        inline const std::string Name() const override
+        {
+            return "R25DGameState";
         }
 
     private:

@@ -48,7 +48,8 @@ set(RT_SOURCE_FILES
         code/runtime/HPMSLogic.h
         code/runtime/GameState.h
         code/runtime/states/R25DGameState.h
-        code/runtime/input/KeyEvent.h)
+        code/runtime/input/KeyEvent.h
+        code/common/HPMSObject.h)
 
 set(TOOLS_SOURCE_FILES
         thirdparty/GLAD/src/glad.c
@@ -69,7 +70,8 @@ set(TOOLS_SOURCE_FILES
         code/core/Renderer.h
         code/core/Texture.h
         code/core/ResourceCache.h
-        code/common/FileSystem.cpp)
+        code/common/FileSystem.cpp
+        code/common/HPMSObject.h)
 
 set(dir ${CMAKE_CURRENT_SOURCE_DIR})
 

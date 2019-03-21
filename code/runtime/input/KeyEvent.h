@@ -131,7 +131,7 @@
 
 namespace hpms
 {
-    struct KeyEvent
+    struct KeyEvent : public HPMSObject
     {
 
         enum InputType
@@ -143,5 +143,10 @@ namespace hpms
         };
         std::string key;
         InputType inputType;
+
+        inline const std::string Name() const override
+        {
+            return "KeyEvent";
+        }
     };
 }

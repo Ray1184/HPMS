@@ -48,7 +48,7 @@ public:
         //scene->AddRenderObject(testEntity2);
         scene->AddRenderObject(pic);
         scene->AddRenderObject(depthMask);
-        for (int i = 0; i < 20; i++)
+        /*for (int i = 0; i < 20; i++)
         {
             Entity* testEntityN = new Entity(testModel);
             testEntityN->SetScale(glm::vec3(0.2, 0.2, 0.2));
@@ -56,7 +56,7 @@ public:
             testEntityN->SetRotation(glm::angleAxis(glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
             testEntityN->SetAnimCurrentFrameIndex(0);
             //scene->AddRenderObject(testEntityN);
-        }
+        }*/
         scene->SetAmbientLight(glm::vec3(2, 2, 2));
         cam = new Camera();
         cam->SetPosition(glm::vec3(3.5, 1, -3));
@@ -75,9 +75,10 @@ public:
         }
     }
 
-    virtual void Update() override
+    virtual void Update(Window* window) override
     {
 
+        return;
 
         glm::quat rot = glm::rotate(testEntity->GetRotation(), 0.05f, glm::vec3(0.f, 1.f, 0.f));
 
@@ -133,6 +134,11 @@ public:
         return quit;
     }
 
+    virtual const std::string Name() const override
+    {
+        return "";
+    }
+
 
 private:
 
@@ -152,7 +158,7 @@ private:
 
 int SimulateNew();
 
-int main0()
+int main()
 {
 
     return SimulateNew();

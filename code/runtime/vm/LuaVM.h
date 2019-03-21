@@ -19,7 +19,7 @@ extern "C" {
 
 namespace hpms
 {
-    class LuaVM
+    class LuaVM : HPMSObject
     {
 
     public:
@@ -61,6 +61,7 @@ namespace hpms
             hpms::LuaRegister::RegisterKeyEvent(state);
             hpms::LuaRegister::RegisterQuaternion(state);
             hpms::LuaRegister::RegisterEntity(state);
+            hpms::LuaRegister::RegisterPicture(state);
             hpms::LuaRegister::RegisterAssetManager(state);
             hpms::LuaRegister::RegisterScene(state);
             hpms::LuaRegister::RegisterCamera(state);
@@ -70,6 +71,11 @@ namespace hpms
         {
             lua_close(state);
             closed = true;
+        }
+
+        inline const std::string Name() const override
+        {
+            return "LuaVM";
         }
 
     private:

@@ -115,5 +115,10 @@ namespace hpms
             Picture::mode = mode;
         }
 
+        inline const std::string Name() const override
+        {
+            return "Picture";
+        }
+
     };
 }

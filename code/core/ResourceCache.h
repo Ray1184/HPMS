@@ -12,7 +12,7 @@
 namespace hpms
 {
 
-    class ResourceCache
+    class ResourceCache : public HPMSObject
     {
     private:
         ResourceCache()
@@ -97,6 +97,7 @@ namespace hpms
                     }
 
                     modelsCache[name] = model;
+                    hpms::SafeDeleteArray(buffer);
                 } else
                 {
                     std::stringstream ss;
@@ -135,6 +136,11 @@ namespace hpms
         {
             FreeTextures();
             FreeModels();
+        }
+
+        inline const std::string Name() const override
+        {
+            return "ResourceCache";
         }
 
     };

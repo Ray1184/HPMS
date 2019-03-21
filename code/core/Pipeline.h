@@ -10,7 +10,8 @@
 
 namespace hpms
 {
-    class Pipeline {
+    class Pipeline : public HPMSObject
+    {
     public:
         virtual void Init(Window* window, Scene* scene, Renderer* renderer) = 0;
 

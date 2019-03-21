@@ -11,11 +11,12 @@
 #include <pods/buffers.h>
 #include <pods/binary.h>
 #include "../common/Utils.h"
+#include "../common/HPMSObject.h"
 
 
 namespace hpms
 {
-    class StdModelItem
+    class StdModelItem : public HPMSObject
     {
     protected:
         std::vector<Mesh> meshes;
@@ -37,6 +38,11 @@ namespace hpms
         void SetMeshes(const std::vector<Mesh>& meshes)
         {
             StdModelItem::meshes = meshes;
+        }
+
+        virtual const std::string Name() const override
+        {
+            return "StdModelItem";
         }
 
 

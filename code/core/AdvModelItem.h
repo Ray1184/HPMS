@@ -53,6 +53,11 @@ namespace hpms
             return &animations[index];
         }
 
+        inline const std::string Name() const override
+        {
+            return "AdvModelItem";
+        }
+
 
 
     };

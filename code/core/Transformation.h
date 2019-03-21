@@ -14,7 +14,7 @@
 
 namespace hpms
 {
-    class Transformation
+    class Transformation : public HPMSObject
     {
     public:
         Transformation()
@@ -37,6 +37,10 @@ namespace hpms
             return resMat;
         }
 
+        inline const std::string Name() const override
+        {
+            return "Transformation";
+        }
 
     };
 }

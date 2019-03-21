@@ -15,7 +15,7 @@
 
 namespace hpms
 {
-    class CGAPIManager
+    class CGAPIManager : public HPMSObject
     {
     public:
 
@@ -51,7 +51,6 @@ namespace hpms
         {
             for (Shader* shader : shadersReferences)
             {
-                shader->Cleanup();
                 hpms::SafeDelete(shader);
                 LOG_DEBUG("Shader cleanup done.");
             }
@@ -69,6 +68,11 @@ namespace hpms
         {
             hpms::SafeDelete(currentRenderer);
             LOG_DEBUG("Renderer cleanup done.");
+        }
+
+        inline const std::string Name() const override
+        {
+            return "CGAPIManager";
         }
 
     private:

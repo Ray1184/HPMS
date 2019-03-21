@@ -8,6 +8,7 @@
 #include <glm/mat4x4.hpp>
 #include <string>
 #include <pods/pods.h>
+#include "../common/HPMSObject.h"
 
 #define MAX_JOINTS 150
 
@@ -16,6 +17,12 @@ namespace hpms
     struct FrameTransform
     {
         glm::mat4 jointMatrix;
+
+        FrameTransform(const glm::mat4& jointMatrix) : jointMatrix(jointMatrix)
+        {}
+
+        FrameTransform()
+        {}
 
         PODS_SERIALIZABLE(
                 1,
@@ -37,6 +44,7 @@ namespace hpms
                 PODS_OPT(jointMatrix[3][3])
         )
 
+
     };
 
     struct Frame
@@ -49,10 +57,11 @@ namespace hpms
                 PODS_OPT(frameTransformations)
         )
 
+
     };
 
 
-    class Animation
+    class Animation : public HPMSObject
     {
 
     public:
@@ -110,6 +119,11 @@ namespace hpms
         inline const Frame* GetFrameWithIndex(unsigned int index) const
         {
             return &frames[index];
+        }
+
+        inline const std::string Name() const override
+        {
+            return "Animation";
         }
 
 

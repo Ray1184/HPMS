@@ -6,10 +6,11 @@
 
 #include <glm/glm.hpp>
 #include "Transformation.h"
+#include "../common/HPMSObject.h"
 
 namespace hpms
 {
-    class Camera
+    class Camera : public HPMSObject
     {
     public:
         Camera() : position(glm::vec3(0, 0, 0)),
@@ -62,6 +63,11 @@ namespace hpms
             viewMatrix = glm::mat4(1.0);
             viewMatrix = hpms::Transformation::UpdateGenericViewMatrix(position, rotation, viewMatrix);
             return viewMatrix;
+        }
+
+        inline const std::string Name() const override
+        {
+            return "Camera";
         }
 
     private:

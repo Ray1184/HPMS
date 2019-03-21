@@ -121,6 +121,11 @@ namespace hpms
             return OBJ_TYPE_NODE;
         }
 
+        inline const std::string Name() const override
+        {
+            return "SceneNode";
+        }
+
 
     private:
         std::string name;

@@ -170,6 +170,11 @@ namespace hpms
             return perspective;
         }
 
+        inline const std::string Name() const override
+        {
+            return "GLWindow";
+        }
+
     private:
 
         std::string title;

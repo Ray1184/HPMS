@@ -25,7 +25,7 @@ namespace hpms
         FINISHED = 2
     };
 
-    class GameState
+    class GameState : public HPMSObject
     {
     protected:
         Scene* scene;
@@ -70,10 +70,12 @@ namespace hpms
         {
             if (!clear)
             {
+                clear = true;
                 hpms::SafeDelete(scene);
                 hpms::SafeDelete(camera);
-                CCleanup();
-                clear = true;
+                LuaRef sceneFun = vm->GetGlobal("scene");
+                LuaRef cleanup = sceneFun["cleanup"];
+                cleanup();
             }
         }
 

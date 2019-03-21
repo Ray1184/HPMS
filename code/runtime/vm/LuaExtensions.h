@@ -135,7 +135,7 @@ namespace hpms
 
     float DistVec2(const glm::vec2& v1, const glm::vec2& v2)
     {
-        return sqrt(pow(v2.x - v1.x, 2) + pow(v2.y - v1.y, 2));
+        return (float) sqrt(pow(v2.x - v1.x, 2) + pow(v2.y - v1.y, 2));
     }
 
     float DotVec2(const glm::vec2& v1, const glm::vec2& v2)
@@ -219,7 +219,12 @@ namespace hpms
         hpms::SafeDelete(pic);
     }
 
-    void AMAddObjToScene(RenderObject* obj, Scene* scene)
+    void AMAddEntityToScene(Entity* obj, Scene* scene)
+    {
+        scene->AddRenderObject(obj);
+    }
+
+    void AMAddPictureToScene(Picture* obj, Scene* scene)
     {
         scene->AddRenderObject(obj);
     }

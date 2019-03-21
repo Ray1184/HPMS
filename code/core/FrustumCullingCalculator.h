@@ -9,7 +9,7 @@
 
 namespace hpms
 {
-    class FrustumCullingCalculator
+    class FrustumCullingCalculator : public HPMSObject
     {
     private:
         float nxX, nxY, nxZ, nxW;
@@ -150,6 +150,11 @@ namespace hpms
         inline bool SphereInsideFrustum(const glm::vec3& center, float boundingRadius)
         {
             return SphereInsideFrustum(center.x, center.y, center.z, boundingRadius);
+        }
+
+        inline const std::string Name() const override
+        {
+            return "FrustumCullingCalculator";
         }
 
 

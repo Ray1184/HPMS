@@ -9,7 +9,7 @@
 
 namespace hpms
 {
-    class Texture
+    class Texture : public HPMSObject
     {
     private:
         int width;
@@ -18,6 +18,7 @@ namespace hpms
         unsigned char* data;
         std::string path;
         bool loaded;
+        bool clear;
 
     public:
         Texture(unsigned char* pdata, int pwidth, int pheight, int pnumComp, const std::string& name) :
@@ -25,7 +26,8 @@ namespace hpms
                 width(pwidth),
                 height(pheight),
                 numComp(pnumComp),
-                path(name)
+                path(name),
+                clear(false)
         {
 
         }
@@ -38,7 +40,11 @@ namespace hpms
 
         inline void FreeImageData()
         {
-            stbi_image_free(data);
+            if (!clear)
+            {
+                clear = true;
+                stbi_image_free(data);
+            }
         }
 
         inline int GetWidth() const
@@ -59,6 +65,11 @@ namespace hpms
         inline const std::string& GetPath() const
         {
             return path;
+        }
+
+        inline const std::string Name() const override
+        {
+            return "Texture";
         }
     };
 }

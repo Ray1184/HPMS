@@ -44,7 +44,6 @@ namespace hpms
             {
                 PHYSFS_file* file = PHYSFS_openRead(path.c_str());
                 int fileLength = PHYSFS_fileLength(file);
-                //char* buf = new char[fileLength];
                 char* buf = hpms::SafeNewArray<char>(fileLength);
                 int lengthRead = PHYSFS_readBytes(file, buf, fileLength);
                 *size = lengthRead;
@@ -117,7 +116,7 @@ namespace hpms
                         LOG_ERROR("An error occurred deserializing: Eof");
                         hpms::SafeDeleteArray(buf);
                         exit(EXIT_FAILURE);
-                    case pods::Error::UnknownError:
+                    default:
                         LOG_ERROR("An error occurred deserializing: UnknownError");
                         hpms::SafeDeleteArray(buf);
                         exit(EXIT_FAILURE);

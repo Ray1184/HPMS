@@ -7,12 +7,13 @@
 #include <glm/glm.hpp>
 #include <utility>
 #include <functional>
+#include "../common/HPMSObject.h"
 
 namespace hpms
 {
 
 
-    class Actor
+    class Actor : public HPMSObject
     {
 
 

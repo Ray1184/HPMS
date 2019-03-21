@@ -12,6 +12,8 @@
 #include <cstdio>
 #include <fstream>
 #include <glm/ext.hpp>
+#include <unordered_map>
+#include "HPMSObject.h"
 
 
 #define LOG_ERROR(msg) hpms::ErrorHandler(__FILE__, __LINE__, msg)
@@ -27,6 +29,8 @@
 
 namespace hpms
 {
+    static std::unordered_map<std::string, size_t> gAllocationsMap;
+
     inline void ErrorHandler(const char* file, int line, const char* message)
     {
         printf("[ERROR] - File %s, at line %d: %s", file, line, message);
@@ -42,6 +46,16 @@ namespace hpms
     inline T* SafeNew(ARGS... args)
     {
         T* obj = new T(args...);
+#if !defined(_DEBUG) && !defined(NDEBUG)
+
+        std::string name = obj->Name();
+        if (gAllocationsMap.find(name) == gAllocationsMap.end())
+        {
+            gAllocationsMap[name] = 0;
+        }
+        gAllocationsMap[name]++;
+
+#endif
         return obj;
     }
 
@@ -49,21 +63,44 @@ namespace hpms
     inline T* SafeNewArray(size_t size)
     {
         T* obj = new T[size];
+#if !defined(_DEBUG) && !defined(NDEBUG)
+        std::string name = "ARRAY";
+        if (gAllocationsMap.find(name) == gAllocationsMap.end())
+        {
+            gAllocationsMap[name] = 0;
+        }
+        gAllocationsMap[name]++;
+#endif
         return obj;
     }
 
     template<typename T>
     inline void SafeDelete(T*& ptr)
     {
+
+
+#if !defined(_DEBUG) && !defined(NDEBUG)
+
+        std::string name = ptr->Name();
+        gAllocationsMap[name]--;
+
+#endif
         delete ptr;
         ptr = nullptr;
+
     }
 
     template<typename T>
     inline void SafeDeleteArray(T*& ptr)
     {
+
+#if !defined(_DEBUG) && !defined(NDEBUG)
+        std::string name = "ARRAY";
+        gAllocationsMap[name]--;
+#endif
         delete[] ptr;
         ptr = nullptr;
+
     }
 
     inline std::string ReadFile(const std::string fileName)

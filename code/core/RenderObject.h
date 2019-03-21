@@ -8,7 +8,7 @@
 namespace hpms
 {
 
-    class RenderObject
+    class RenderObject : public HPMSObject
     {
     public:
         virtual bool IsVisible() const = 0;

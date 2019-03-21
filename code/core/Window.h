@@ -7,10 +7,11 @@
 #include <string>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include "../common/HPMSObject.h"
 
 namespace hpms
 {
-    struct Options
+    struct Options : public HPMSObject
     {
         bool cullFace;
         bool showTriangles;
@@ -19,17 +20,41 @@ namespace hpms
         unsigned int pixelRatio;
         bool fullscreen;
 
+        Options()
+        {}
+
+        Options(bool cullFace, bool showTriangles, bool showFps, bool compatibleProfile, unsigned int pixelRatio,
+                bool fullscreen) : cullFace(cullFace), showTriangles(showTriangles), showFps(showFps),
+                                   compatibleProfile(compatibleProfile), pixelRatio(pixelRatio), fullscreen(fullscreen)
+        {}
+
+        inline const std::string Name() const override
+        {
+            return "Options";
+        }
+
     };
 
-    struct Perspective
+    struct Perspective : public HPMSObject
     {
         float fov;
         float zNear;
         float zFar;
+
+        Perspective()
+        {}
+
+        Perspective(float fov, float zNear, float zFar) : fov(fov), zNear(zNear), zFar(zFar)
+        {}
+
+        inline const std::string Name() const override
+        {
+            return "Perspective";
+        }
     };
 
 
-    class Window
+    class Window : public HPMSObject
     {
     public:
 

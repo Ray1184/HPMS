@@ -41,6 +41,11 @@ namespace hpms
 
         void ClearDepthBuffer() override;
 
+        inline const std::string Name() const override
+        {
+            return "GLRenderer";
+        }
+
     private:
 
         GLuint quadVbo;

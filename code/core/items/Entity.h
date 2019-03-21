@@ -147,5 +147,10 @@ namespace hpms
         {
             return OBJ_TYPE_ENTITY;
         }
+
+        inline const std::string Name() const override
+        {
+            return "Entity";
+        }
     };
 }

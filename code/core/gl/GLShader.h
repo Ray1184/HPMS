@@ -180,6 +180,11 @@ namespace hpms
             }
         }
 
+        inline const std::string Name() const override
+        {
+            return "GLShader";
+        }
+
     private:
 
         GLuint programId;

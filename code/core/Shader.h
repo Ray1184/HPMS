@@ -10,7 +10,7 @@
 
 namespace hpms
 {
-    class Shader
+    class Shader : public HPMSObject
     {
     public:
         virtual void CreateUniform(const std::string& name) = 0;

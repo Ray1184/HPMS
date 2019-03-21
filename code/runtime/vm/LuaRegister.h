@@ -38,7 +38,8 @@ namespace hpms
                     .addFunction("delete_picture", &hpms::AMDeleteForeground)
                     .addFunction("make_depth_mask", &hpms::AMCreateDepthMask)
                     .addFunction("delete_depth_mask", &hpms::AMDeleteDepthMask)
-                    .addFunction("add_obj_to_scene", &hpms::AMAddObjToScene)
+                    .addFunction("add_entity_to_scene", &hpms::AMAddEntityToScene)
+                    .addFunction("add_picture_to_scene", &hpms::AMAddPictureToScene)
                     .endNamespace();
         }
 
@@ -56,6 +57,19 @@ namespace hpms
                     .addProperty("visible", &hpms::Entity::IsVisible, &hpms::Entity::SetVisible)
                     .addProperty("anim_loop", &hpms::Entity::IsAnimLoop, &hpms::Entity::SetAnimLoop)
                     .addProperty("anim_play", &hpms::Entity::IsAnimPlay, &hpms::Entity::SetAnimPlay)
+                    .endClass()
+                    .endNamespace();
+        }
+
+        static void RegisterPicture(lua_State* state)
+        {
+            getGlobalNamespace(state)
+                    .beginNamespace("hpms")
+                    .beginClass<hpms::Picture>("picture")
+                    .addProperty("alpha", &hpms::Picture::GetAlpha, &hpms::Picture::SetAlpha)
+                    .addProperty("x", &hpms::Picture::GetX, &hpms::Picture::SetX)
+                    .addProperty("y", &hpms::Picture::GetY, &hpms::Picture::SetY)
+                    .addProperty("visible", &hpms::Picture::IsVisible, &hpms::Picture::SetVisible)
                     .endClass()
                     .endNamespace();
         }

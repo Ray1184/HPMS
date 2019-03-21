@@ -97,7 +97,7 @@ namespace hpms
 
         void Cleanup(Scene* scene, Renderer* renderer) override
         {
-            // Cleanup is intended only for GPU resources, not for physical data.
+            // Cleanup is intended only for GPU resources (except shaders), not for physical data.
             hpms::CGAPIManager::Instance().FreeShaders();
 
             if (Picture* pic = scene->GetBackPicture())
@@ -148,11 +148,17 @@ namespace hpms
             LOG_DEBUG("Retro 2.5D pipeline cleanup done.");
         }
 
+        inline const std::string Name() const override
+        {
+            return "R25DPipeline";
+        }
+
     private:
 
         Shader* scene3DShader;
         Shader* pictureShader;
         Shader* depthShader;
+
     };
 
 

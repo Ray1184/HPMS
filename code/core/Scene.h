@@ -17,7 +17,7 @@ namespace hpms
 {
 
 
-    class Scene
+    class Scene : HPMSObject
     {
     public:
         inline void AddRenderObject(RenderObject* obj)
@@ -79,6 +79,11 @@ namespace hpms
         inline const std::unordered_map<const AdvModelItem*, std::vector<Entity*>>& GetItemsMap() const
         {
             return itemsMap;
+        }
+
+        inline const std::string Name() const override
+        {
+            return "Scene";
         }
 
     private:

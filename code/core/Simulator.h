@@ -21,7 +21,7 @@
 
 namespace hpms
 {
-    class Timer
+    class Timer : HPMSObject
     {
     public:
         Timer() : lastLoopTime(0.0)
@@ -57,6 +57,11 @@ namespace hpms
             return lastLoopTime;
         }
 
+        inline const std::string Name() const override
+        {
+            return "Timer";
+        }
+
     private:
         double lastLoopTime;
         std::chrono::high_resolution_clock clock;
@@ -64,7 +69,7 @@ namespace hpms
 
     };
 
-    class Simulator
+    class Simulator : public HPMSObject
     {
     public:
         Simulator(const std::string& ptitle, unsigned int width, unsigned int height, bool vSync, Options& options,
@@ -84,6 +89,11 @@ namespace hpms
         {
             Init();
             Loop();
+        }
+
+        inline const std::string Name() const override
+        {
+            return "Simulator";
         }
 
 
@@ -151,14 +161,13 @@ namespace hpms
         inline void Cleanup()
         {
             logic->Cleanup();
-            hpms::SafeDelete(logic);
             CGAPIManager::Instance().FreeWindow();
             LOG_DEBUG("Simulator module cleanup done.");
         }
 
         inline void Sync()
         {
-            float loopSlot = 1 / TARGET_FPS;
+            float loopSlot = (float) (1 / TARGET_FPS);
             double endTime = timer.GetLastLoopTime() + loopSlot;
             while (timer.GetTime() < endTime)
             {

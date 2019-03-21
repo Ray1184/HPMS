@@ -17,7 +17,7 @@
 
 namespace hpms
 {
-    class Renderer
+    class Renderer : public HPMSObject
     {
 
     public:

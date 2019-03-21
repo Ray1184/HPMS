@@ -9,10 +9,11 @@
 #include <pods/pods.h>
 #include <pods/buffers.h>
 #include <pods/binary.h>
+#include "../common/HPMSObject.h"
 
 namespace hpms
 {
-    class Material
+    class Material : public HPMSObject
     {
     private:
         glm::vec4 ambient;
@@ -62,6 +63,11 @@ namespace hpms
         inline void SetTextureName(const std::string& textureName)
         {
             Material::textureName = textureName;
+        }
+
+        inline const std::string Name() const override
+        {
+            return "Material";
         }
 
     };

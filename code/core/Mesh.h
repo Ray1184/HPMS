@@ -15,7 +15,7 @@ namespace hpms
 {
 
 
-    class Mesh
+    class Mesh : public HPMSObject
     {
     private:
 
@@ -181,6 +181,11 @@ namespace hpms
         inline void SetBoundingRadious(float boundingRadious)
         {
             Mesh::boundingRadious = boundingRadious;
+        }
+
+        inline const std::string Name() const override
+        {
+            return "Mesh";
         }
     };
 

@@ -85,6 +85,7 @@ namespace hpms
                 currentState->Update();
             } else
             {
+                currentState->GetPipeline()->Cleanup(currentState->GetScene(), renderer);
                 currentState->Cleanup();
                 std::string nextScript = currentState->GetStateToSwitch();
                 hpms::SafeDelete(currentState);
@@ -101,15 +102,23 @@ namespace hpms
         {
             if (!clear)
             {
-                CGAPIManager::Instance().FreeRenderer();
-                hpms::SafeDelete(vm);
                 clear = true;
+                CGAPIManager::Instance().FreeRenderer();
+                ResourceCache::Instance().FreeAll();
+                hpms::SafeDelete(vm);
+
             }
         }
 
         inline bool Quit() override
         {
-            return currentState->Quit();
+            if (currentState->Quit())
+            {
+                currentState->GetPipeline()->Cleanup(currentState->GetScene(), renderer);
+                hpms::SafeDelete(currentState);
+                return true;
+            }
+            return false;
         }
 
         inline void CheckKeyBehavior(Window* window, std::vector<KeyEvent>& events, unsigned int keyCode,
@@ -152,6 +161,11 @@ namespace hpms
                 ss << "State mode " << mode << " is not currently supported.";
                 LOG_ERROR(ss.str().c_str());
             }
+        }
+
+        inline const std::string Name() const override
+        {
+            return "HPMSLogic";
         }
 
 

@@ -1,0 +1,112 @@
+###########################
+# Asset Manager Functions #
+###########################
+
+e = hpms.make_entity('data/out/01.hdat') -- Creates new entity
+hpms.delete_entity(e) -- Safe deletes and entity
+
+b = hpms.make_background('data/resources/textures/B01_B.png') -- Creates new background image
+hpms.delete_background(b) -- Safe deletes a background image
+
+p = hpms.make_picture('data/resources/textures/B01_P.png') -- Creates new foreground image
+hpms.delete_picture(p) -- Safe deletes a foreground image
+
+d = hpms.make_depth_mask('data/resources/textures/B01_D.png') -- Creates new depth mask image
+hpms.delete_depth_mask(d) -- Safe deletes a depth mask image
+
+hpms.add_entity_to_scene(e, scene) -- Adds an entity to world
+hpms.add_picture_to_scene(b, scene) -- Adds a picture to world
+
+###########################
+#    Entites Functions    #
+###########################
+
+e.position = hpms.vec3(0, 0, 0) -- Get and set entity position
+e.rotation = hpms.from_axis(hpms.to_radians(90), 0, 0, 1) -- Get and set entity rotation
+e.scale = hpms.vec3(0, 0, 0) -- Get and set entity scale
+e.anim_index = 0 -- Get and set current entity animation
+e.anim_frame_index = 10 -- Get and set frame for current entity animation
+e.visible = true -- Get and set entity visibility flag
+e.anim_loop = false -- Get and set entity loop animation flag
+e.anim_play = true -- Get and set entity play animation flag
+
+p.alpha = 1 -- Get and set picture alpha
+p.x = 100 -- Get and set picture x
+p.y = 50 -- Get and set picture y
+p.visible = true -- Get and set picture visibility flag
+
+
+###########################
+#       Common Math       #
+###########################
+
+r = hpms.to_radians(90) -- Convert degrees to radians
+d = hpms.to_degrees(1) -- Convert radians to degrees
+
+q = hpms.quat() -- Creates empty quaternion
+q = hpms.quat(1, 0, 0, 0) -- Creates quaternion with w, x, y, z
+q = hpms.from_axis(hpms.to_radians(90), 0, 0, 1) -- Creates quaternion from euler angles
+q = hpms.quat_mult(q_a, q_b) -- Creates quaternion as multiplication of two quaternions
+q.w = 1 -- Get and set w property
+q.x = 0 -- Get and set x property
+q.y = 0 -- Get and set y property
+q.z = 0 -- Get and set z property
+
+v2 = hpms.vec2() -- Creates 2 dimensions empty vector
+v2 = hpms.vec2(0, 0) -- Creates 2 dimensions vector with x, y
+v2 = hpms.vec2_add(v2_a, v2_b) -- Creates 2 dimensions vector as sum of two 2 dimensions vectors
+v2 = hpms.vec2_sub(v2_a, v2_b) -- Creates 2 dimensions vector as subtraction of two 2 dimensions vectors
+v2 = hpms.vec2_mult(v2_a, v2_b) -- Creates 2 dimensions vector as multiplication of two 2 dimensions vectors
+v2 = hpms.vec2_div(v2_a, v2_b) -- Creates 2 dimensions vector as division of two 2 dimensions vectors
+dist = hpms.vec2_dist(v2_a, v2_b) -- Calculates distance between two 2 dimensions vectors
+dot = hpms.vec2_dot(v2_a, v2_b) -- Calculates scalar product between two 2 dimensions vectors
+v2.x = 0 -- Get and set x property
+v2.y = 0 -- Get and set y property
+
+v3 = hpms.vec3() -- Creates 3 dimensions empty vector
+v3 = hpms.vec3(0, 0, 0) -- Creates 3 dimensions vector with x, y, z
+v3 = hpms.vec3_add(v3_a, v3_b) -- Creates 3 dimensions vector as sum of two 3 dimensions vectors
+v3 = hpms.vec3_sub(v3_a, v3_b) -- Creates 3 dimensions vector as subtraction of two 3 dimensions vectors
+v3 = hpms.vec3_mult(v3_a, v3_b) -- Creates 3 dimensions vector as multiplication of two 3 dimensions vectors
+v3 = hpms.vec3_div(v3_a, v3_b) -- Creates 3 dimensions vector as division of two 3 dimensions vectors
+dist = hpms.vec3_dist(v3_a, v3_b) -- Calculates distance between two 3 dimensions vectors
+dot = hpms.vec3_dot(v3_a, v3_b) -- Calculates scalar product between two 3 dimensions vectors
+cross = hpms.vec3_cross(v3_a, v3_b) -- Calculates cross product between two 3 dimensions vectors
+v3.x = 0 -- Get and set x property
+v3.y = 0 -- Get and set y property
+v3.z = 0 -- Get and set z property
+
+v4 = hpms.vec4() -- Creates 4 dimensions empty vector
+v4 = hpms.vec4(0, 0, 0, 0) -- Creates 4 dimensions vector with x, y, z, w
+v4 = hpms.vec4_add(v4_a, v4_b) -- Creates 4 dimensions vector as sum of two 4 dimensions vectors
+v4 = hpms.vec4_sub(v4_a, v4_b) -- Creates 4 dimensions vector as subtraction of two 4 dimensions vectors
+v4 = hpms.vec4_mult(v4_a, v4_b) -- Creates 4 dimensions vector as multiplication of two 4 dimensions vectors
+v4 = hpms.vec4_div(v4_a, v4_b) -- Creates 4 dimensions vector as division of two 4 dimensions vectors
+dot = hpms.vec4_dot(v4_a, v4_b) -- Calculates scalar product between two 4 dimensions vectors
+v4.x = 0 -- Get and set x property
+v4.y = 0 -- Get and set y property
+v4.z = 0 -- Get and set z property
+v4.w = 0 -- Get and set w property
+
+m4 = hpms.mat4() -- Creates 4x4 matrix
+m4 = hpms.mat4_add(m4_a, m4_b) -- Creates 4x4 matrix as sum of two 4x4 matrices
+m4 = hpms.mat4_sub(m4_a, m4_b) -- Creates 4x4 matrix as subtraction of two 4x4 matrices
+m4 = hpms.mat4_mult(m4_a, m4_b) -- Creates 4x4 matrix as multiplication of two 4x4 matrices
+m4 = hpms.mat4_div(m4_a, m4_b) -- Creates 4x4 matrix as division of two 4x4 matrices
+el = hpms.mat4_elem_at(m4, 0, 0) -- Returns matrix element at given index
+
+###########################
+#     Input Handling      #
+###########################
+
+k = key_event.key -- Returns the current triggered key
+t = key_event.input_type -- Returns the type of input for triggered key
+
+###########################
+#    Scene Management     #
+###########################
+
+scene.ambient_light = hpms.vec3(1, 1, 1) -- Get and set ambient light for current scene
+
+camera.position = hpms.vec3(1, 2, 0) -- Get and set camera position for current scene
+camera.rotation = hpms.vec3(hpms.to_radians(90), 0, 0) -- Get and set camera rotation for current scene
