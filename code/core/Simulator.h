@@ -149,9 +149,10 @@ namespace hpms
 
                 Render();
 
-                if (!window->IsVSync())
+                bool absFrameRate = hpms::GetConf("ABS_FRAMERATE", false);
+                if (!window->IsVSync() && !absFrameRate)
                 {
-                    //Sync();
+                    Sync();
                 }
             }
             LOG_DEBUG("Main loop stopped.");

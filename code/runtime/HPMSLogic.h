@@ -24,6 +24,7 @@ namespace hpms
     private:
         LuaVM* vm;
         Renderer* renderer;
+        FrameBuffer* frameBuffer;
         std::unordered_map<std::string, bool> keyStatusMap;
         GameState* currentState;
         bool clear;
@@ -32,6 +33,9 @@ namespace hpms
         {
             vm = hpms::SafeNew<LuaVM>();
             renderer = CGAPIManager::Instance().CreateNewRenderer();
+            int width = hpms::GetConf("WND_WIDTH", 320);
+            int height = hpms::GetConf("WND_HEIGHT", 200);
+            frameBuffer = CGAPIManager::Instance().CreateNewFrameBuffer(width, height);
         }
 
         ~HPMSLogic()
@@ -78,14 +82,14 @@ namespace hpms
             if (currentState->GetStatus() == hpms::Status::NEW)
             {
                 currentState->Init();
-                currentState->GetPipeline()->Init(window, currentState->GetScene(), renderer);
+                currentState->GetPipeline()->Init(window, currentState->GetScene(), renderer, frameBuffer);
                 currentState->SetStatus(Status::RUNNING);
             } else if (currentState->GetStatus() == Status::RUNNING)
             {
                 currentState->Update();
             } else
             {
-                currentState->GetPipeline()->Cleanup(currentState->GetScene(), renderer);
+                currentState->GetPipeline()->Cleanup(currentState->GetScene(), renderer, frameBuffer);
                 currentState->Cleanup();
                 std::string nextScript = currentState->GetStateToSwitch();
                 hpms::SafeDelete(currentState);
@@ -95,7 +99,8 @@ namespace hpms
 
         inline void Render(Window* window) override
         {
-            currentState->GetPipeline()->Render(window, currentState->GetScene(), currentState->GetCamera(), renderer);
+            currentState->GetPipeline()->Render(window, currentState->GetScene(), currentState->GetCamera(), renderer,
+                                                frameBuffer);
         }
 
         inline void Cleanup() override
@@ -103,6 +108,7 @@ namespace hpms
             if (!clear)
             {
                 clear = true;
+                CGAPIManager::Instance().FreeFrameBuffer();
                 CGAPIManager::Instance().FreeRenderer();
                 ResourceCache::Instance().FreeAll();
                 hpms::SafeDelete(vm);
@@ -114,7 +120,7 @@ namespace hpms
         {
             if (currentState->Quit())
             {
-                currentState->GetPipeline()->Cleanup(currentState->GetScene(), renderer);
+                currentState->GetPipeline()->Cleanup(currentState->GetScene(), renderer, frameBuffer);
                 hpms::SafeDelete(currentState);
                 return true;
             }

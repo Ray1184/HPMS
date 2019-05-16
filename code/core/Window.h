@@ -17,15 +17,14 @@ namespace hpms
         bool showTriangles;
         bool showFps;
         bool compatibleProfile;
-        unsigned int pixelRatio;
         bool fullscreen;
 
         Options()
         {}
 
-        Options(bool cullFace, bool showTriangles, bool showFps, bool compatibleProfile, unsigned int pixelRatio,
+        Options(bool cullFace, bool showTriangles, bool showFps, bool compatibleProfile,
                 bool fullscreen) : cullFace(cullFace), showTriangles(showTriangles), showFps(showFps),
-                                   compatibleProfile(compatibleProfile), pixelRatio(pixelRatio), fullscreen(fullscreen)
+                                   compatibleProfile(compatibleProfile), fullscreen(fullscreen)
         {}
 
         inline const std::string Name() const override

@@ -28,16 +28,21 @@ namespace hpms
 
         GLShader() : clear(false)
         {
-            programId = glCreateProgram();
-            if (!programId)
-            {
-                LOG_ERROR("Error creating shader program.");
-            }
+
         }
 
         virtual ~GLShader()
         {
             Cleanup();
+        }
+
+        inline void Init() override
+        {
+            programId = glCreateProgram();
+            if (!programId)
+            {
+                LOG_ERROR("Error creating shader program.");
+            }
         }
 
         inline void CreateUniform(const std::string& name) override

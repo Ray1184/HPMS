@@ -13,7 +13,8 @@
 #include "Renderer.h"
 #include "ResourceCache.h"
 #include "items/Picture.h"
-#include "FrustumCullingCalculator.h"
+#include "FrameBuffer.h"
+
 
 
 namespace hpms
@@ -28,6 +29,7 @@ namespace hpms
             std::string vertCode = hpms::ReadFile(SHADER_FILE_SCENE_VERT);
             std::string fragCode = hpms::ReadFile(SHADER_FILE_SCENE_FRAG);
             Shader* sceneShader = CGAPIManager::Instance().CreateNewShader();
+            sceneShader->Init();
             sceneShader->CreateVS(vertCode);
             sceneShader->CreateFS(fragCode);
             sceneShader->Link();
@@ -42,11 +44,26 @@ namespace hpms
             return sceneShader;
         }
 
+        inline static Shader* CreateFrameBufferShader(PostFX* postFx)
+        {
+            Shader* fboShader = CGAPIManager::Instance().CreateNewShader();
+            std::string vertCode = hpms::ReadFile(postFx->GetVSFileName());
+            std::string fragCode = hpms::ReadFile(postFx->GetFSFileName());
+
+            fboShader->Init();
+            fboShader->CreateVS(vertCode);
+            fboShader->CreateFS(fragCode);
+            fboShader->Link();
+            postFx->DefineShader(fboShader);
+            return fboShader;
+        }
+
         inline static Shader* CreatePictureShader()
         {
             std::string vertCode = hpms::ReadFile(SHADER_FILE_PICTURE_VERT);
             std::string fragCode = hpms::ReadFile(SHADER_FILE_PICTURE_FRAG);
             Shader* layerShader = CGAPIManager::Instance().CreateNewShader();
+            layerShader->Init();
             layerShader->CreateVS(vertCode);
             layerShader->CreateFS(fragCode);
             layerShader->Link();
@@ -63,6 +80,7 @@ namespace hpms
             std::string vertCode = hpms::ReadFile(SHADER_FILE_DEPTHMASK_VERT);
             std::string fragCode = hpms::ReadFile(SHADER_FILE_DEPTHMASK_FRAG);
             Shader* depthShader = CGAPIManager::Instance().CreateNewShader();
+            depthShader->Init();
             depthShader->CreateVS(vertCode);
             depthShader->CreateFS(fragCode);
             depthShader->Link();
@@ -131,7 +149,6 @@ namespace hpms
         }
 
     private:
-
 
         inline static void RenderCallback(Entity* entity, Shader* shader, Camera* camera, Window* window)
         {

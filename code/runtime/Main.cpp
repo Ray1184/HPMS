@@ -14,10 +14,23 @@ using namespace hpms;
 
 int main()
 {
-    Options opts(true, false, true, false, 5, false);
+    bool showTriang = hpms::GetConf("WIREFRAME", false);
+    bool showFps = hpms::GetConf("SHOW_FPS", true);
+    bool compProf = hpms::GetConf("COMP_PROFILE", false);
+    bool fullscreen = hpms::GetConf("FULLSCREEN", false);
+    bool vSync = hpms::GetConf("V_SYNC", false);
+    int width = hpms::GetConf("WND_WIDTH", 320);
+    int height = hpms::GetConf("WND_HEIGHT", 200);
+    std::string name = hpms::GetConf("RT_NAME", "Default HPMS");
+
+    float fov = hpms::GetConf("CAM_FOV", 60.0f);
+    float zNear = hpms::GetConf("CAM_ZNEAR", 0.5f);
+    float zFar = hpms::GetConf("CAM_ZFAR", 20.0f);
+
+    Options opts(true, showTriang, showFps, compProf, fullscreen);
     CustomLogic* logic = hpms::SafeNew<HPMSLogic>();
-    Perspective pers(static_cast<float>(glm::radians(60.0)), 0.5f, 20.0f);
-    Simulator sim("HPMS Test", 320, 200, false, opts, pers, logic);
+    Perspective pers(glm::radians(fov), zNear, zFar);
+    Simulator sim(name, width, height, vSync, opts, pers, logic);
     try
     {
         sim.Start();

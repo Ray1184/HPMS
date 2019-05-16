@@ -1,3 +1,7 @@
+/*!
+ * File AssimpToHDATConverterMain.h
+ */
+
 #include <string>
 #include <iostream>
 #include "AssimpImporter.h"
@@ -8,9 +12,9 @@ int Serialize(std::string& filename, std::string& texPath, std::string& outPath)
 
 int main(int argc, char** argv)
 {
-    if (argc < 2 || argc > 4)
+    if (argc < 3 || argc > 4)
     {
-        std::cerr << "Arguments number " << argc << ", expected 2 or 3" << std::endl;
+        std::cerr << "Arguments number " << argc - 1 << ", expected 2 or 3" << std::endl;
         return -1;
     }
 
@@ -34,11 +38,12 @@ int Serialize(std::string& modelPath, std::string& texPath, std::string& outPath
 {
     hpms::AdvModelItem* item = hpms::AssimpImporter::LoadModelItem(modelPath, texPath);
 
-       pods::ResizableOutputBuffer out;
+    pods::ResizableOutputBuffer out;
     pods::BinarySerializer<decltype(out)> serializer(out);
     if (serializer.save(*item) != pods::Error::NoError)
     {
-        std::cerr << "Error serializing "<< modelPath << std::endl;
+        std::cerr << "Error serializing " << modelPath << std::endl;
+        hpms::SafeDelete(item);
         return -1;
     }
 
@@ -53,5 +58,6 @@ int Serialize(std::string& modelPath, std::string& texPath, std::string& outPath
 
     outFile.close();
     std::cout << "Serialization completed successfully" << std::endl;
+    hpms::SafeDelete(item);
     return 0;
 }

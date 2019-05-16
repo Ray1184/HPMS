@@ -116,10 +116,6 @@ namespace hpms
             return false;
         }
 
-        inline unsigned int GetTypeId() const override
-        {
-            return OBJ_TYPE_NODE;
-        }
 
         inline const std::string Name() const override
         {

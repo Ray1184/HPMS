@@ -12,6 +12,9 @@
 #include "gl/GLShader.h"
 #include "Renderer.h"
 #include "gl/GLRenderer.h"
+#include "FrameBuffer.h"
+#include "gl/GLFrameBuffer.h"
+#include "gl/fx/GLDefaultPostFX.h"
 
 namespace hpms
 {
@@ -47,6 +50,19 @@ namespace hpms
             return currentRenderer;
         }
 
+        inline FrameBuffer* CreateNewFrameBuffer(int width, int height)
+        {
+            // TODO - Unitil now only OpenGL is supported.
+            frameBuffer = hpms::SafeNew<hpms::GLFrameBuffer>(width, height, nullptr, nullptr);
+            return frameBuffer;
+        }
+
+        inline PostFX* CreateNewPostFX(float pixelRatio)
+        {
+            // TODO - Unitil now only OpenGL Default FX is supported.
+            postFx = hpms::SafeNew<hpms::GLDefaultPostFX>(pixelRatio);
+            return postFx;
+        }
         inline void FreeShaders()
         {
             for (Shader* shader : shadersReferences)
@@ -70,6 +86,18 @@ namespace hpms
             LOG_DEBUG("Renderer cleanup done.");
         }
 
+        inline void FreeFrameBuffer()
+        {
+            hpms::SafeDelete(frameBuffer);
+            LOG_DEBUG("FrameBuffer cleanup done.");
+        }
+
+        inline void FreePostFX()
+        {
+            hpms::SafeDelete(postFx);
+            LOG_DEBUG("PostFX cleanup done.");
+        }
+
         inline const std::string Name() const override
         {
             return "CGAPIManager";
@@ -86,5 +114,8 @@ namespace hpms
         std::vector<hpms::Shader*> shadersReferences;
         hpms::Window* currentWindow;
         hpms::Renderer* currentRenderer;
+        hpms::FrameBuffer* frameBuffer;
+        hpms::PostFX* postFx;
+
     };
 }

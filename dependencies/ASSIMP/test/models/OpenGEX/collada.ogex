@@ -57,7 +57,7 @@ GeometryNode $node3
 
 GeometryNode $node4
 {
-	Name {string {"Floor"}}
+	Name {string {"Room"}}
 	ObjectRef {ref {$geometry2}}
 	MaterialRef (index = 0) {ref {$material2}}
 
@@ -1430,7 +1430,7 @@ GeometryObject $geometry1		// Collada
 	}
 }
 
-GeometryObject $geometry2		// Floor
+GeometryObject $geometry2		// Room
 {
 	Mesh (primitive = "triangles")
 	{

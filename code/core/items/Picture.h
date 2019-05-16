@@ -100,11 +100,6 @@ namespace hpms
             return !(rhs == *this);
         }
 
-        inline unsigned int GetTypeId() const override
-        {
-            return OBJ_TYPE_PICTURE;
-        }
-
         inline PictureMode GetMode() const
         {
             return mode;

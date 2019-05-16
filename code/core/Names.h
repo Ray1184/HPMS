@@ -5,7 +5,7 @@
 #pragma once
 
 // Main folders
-#define CONFIG_FILE "data/HPMS.cfg"
+
 #define SEPARATOR "/"
 #ifndef DATA_ARCHIVE
 #define MODELS_FOLDER "data/resources/models/"
@@ -54,7 +54,5 @@
 #define SHADER_FILE_DEPTHMASK_VERT SHADERS_FOLDER "DepthMask.vert"
 #define SHADER_FILE_DEPTHMASK_FRAG SHADERS_FOLDER "DepthMask.frag"
 
-// Object types.
-#define OBJ_TYPE_ENTITY 0
-#define OBJ_TYPE_PICTURE 1
-#define OBJ_TYPE_NODE 2
+// PostFX params.
+#define PARAM_GLOBAL_ALPHA "p_Alpha"

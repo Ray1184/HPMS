@@ -49,9 +49,40 @@ set(RT_SOURCE_FILES
         code/runtime/GameState.h
         code/runtime/states/R25DGameState.h
         code/runtime/input/KeyEvent.h
-        code/common/HPMSObject.h)
+        code/common/HPMSObject.h
+        code/core/FrameBuffer.h
+        code/core/PostFX.h
+        code/core/gl/GLFrameBuffer.h
+        code/core/gl/fx/GLDefaultPostFX.h
+        code/common/Debug.h
+        code/logic/Room.h
+        code/logic/CalcUtils.h)
 
-set(TOOLS_SOURCE_FILES
+set(ROOM_TOOLS_SOURCE_FILES
+        thirdparty/GLAD/src/glad.c
+        code/common/Utils.h
+        code/common/FileSystem.h
+        code/core/Material.h
+        code/core/Mesh.cpp
+        code/core/Mesh.h
+        code/core/Actor.h
+        code/core/StdModelItem.cpp
+        code/core/StdModelItem.h
+        code/core/AdvModelItem.cpp
+        code/core/AdvModelItem.h
+        code/core/Animation.cpp
+        code/core/Animation.h
+        code/core/Renderer.h
+        code/core/Texture.h
+        code/core/ResourceCache.h
+        code/common/FileSystem.cpp
+        code/common/HPMSObject.h
+        code/logic/Room.h
+        code/logic/CalcUtils.h
+        code/tools/RoomImporter.cpp
+        code/tools/RoomImporter.h)
+
+set(AI_TOOLS_SOURCE_FILES
         thirdparty/GLAD/src/glad.c
         code/common/Utils.h
         code/common/FileSystem.h
@@ -72,6 +103,7 @@ set(TOOLS_SOURCE_FILES
         code/core/ResourceCache.h
         code/common/FileSystem.cpp
         code/common/HPMSObject.h)
+
 
 set(dir ${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -137,9 +169,16 @@ include_directories(thirdparty/PODS/include)
 include_directories(thirdparty/ASSIMP/include)
 include_directories(thirdparty/RAPIDJSON/include)
 include_directories(thirdparty/LUABRIDGE/include)
+include_directories(thirdparty/LIGHTCONF/include)
+include_directories(thirdparty/IMGUI/include)
+include_directories(thirdparty/PUGIXML/include)
 
 # Copy all resources to bin folder
 file(COPY data DESTINATION ${dir}/bin)
+
+# Copy all default shared libraries in bin folder
+file(GLOB DLLS ${dir}/libs/*.dll)
+file(COPY ${DLLS} DESTINATION ${dir}/bin)
 
 # Add libraries dependencies
 add_subdirectory(dependencies)
@@ -149,6 +188,8 @@ add_executable(HPMS ${RT_SOURCE_FILES} code/runtime/Main.cpp)
 target_link_libraries(HPMS glfw physfs liblua)
 
 # Build the tools runtimes
+add_executable(AIToHMDATConverter ${AI_TOOLS_SOURCE_FILES} code/tools/AssimpToHDATConverter.cpp)
+target_link_libraries(HPMS assimp physfs)
 
-add_executable(AIToHDATConverter ${TOOLS_SOURCE_FILES} code/tools/AssimpToHDATConverterMain.cpp)
-target_link_libraries(AIToHDATConverter physfs glfw assimp)
+add_executable(RoomToHRDATConverter ${ROOM_TOOLS_SOURCE_FILES} code/tools/RoomToHDATConverter.cpp)
+target_link_libraries(HPMS physfs)

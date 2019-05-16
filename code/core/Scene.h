@@ -20,6 +20,9 @@ namespace hpms
     class Scene : HPMSObject
     {
     public:
+        Scene() : ambientLight(glm::vec3(1.0, 1.0, 1.0)), alpha(1.0)
+        {}
+
         inline void AddRenderObject(RenderObject* obj)
         {
 
@@ -86,6 +89,16 @@ namespace hpms
             return "Scene";
         }
 
+        inline float GetAlpha() const
+        {
+            return alpha;
+        }
+
+        inline void SetAlpha(float alpha)
+        {
+            Scene::alpha = alpha;
+        }
+
     private:
 
         std::unordered_map<const hpms::AdvModelItem*, std::vector<hpms::Entity*>> itemsMap;
@@ -93,5 +106,6 @@ namespace hpms
         Picture* backPicture;
         Picture* depthPicture;
         glm::vec3 ambientLight;
+        float alpha;
     };
 }

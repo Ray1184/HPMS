@@ -13,6 +13,8 @@ namespace hpms
     class Shader : public HPMSObject
     {
     public:
+        virtual void Init() = 0;
+
         virtual void CreateUniform(const std::string& name) = 0;
 
         virtual void CreateMaterialUniform(const std::string& name) = 0;

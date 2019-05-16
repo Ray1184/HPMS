@@ -82,6 +82,11 @@ namespace hpms
             }
         }
 
+        inline void AddTransform(const glm::mat4 mat)
+        {
+            transformations.push_back(mat);
+        }
+
         inline const std::vector<AnimNode*>& GetChildren() const
         {
             return children;
@@ -140,10 +145,6 @@ namespace hpms
     public:
         static AdvModelItem* LoadModelItem(std::string& path, std::string& textDirs);
 
-        static void DestroyModelItem(AdvModelItem*& modelItem)
-        {
-            hpms::SafeDelete(modelItem);
-        }
 
     private:
         static void ProcessMaterial(aiMaterial* aiMat, std::vector<Material>& materials, std::string& textDirs);
@@ -225,14 +226,14 @@ namespace hpms
                 }
 
 
-                animNode->transformations.push_back(transfMat);
+                animNode->AddTransform(transfMat);
             }
         }
 
         inline static unsigned int GetAnimationFrames(AnimNode* parent)
         {
-            unsigned int numFrames = parent->transformations.size();
-            for (AnimNode* child : parent->children)
+            unsigned int numFrames = parent->GetTransformations().size();
+            for (AnimNode* child : parent->GetChildren())
             {
                 unsigned int childFrames = GetAnimationFrames(child);
                 numFrames = std::max(numFrames, childFrames);
@@ -248,8 +249,8 @@ namespace hpms
                 return glm::mat4(1.0);
 
             }
-            glm::mat4 parentTransform = GetParentTransforms(node->parent, framePos);
-            std::vector<glm::mat4> transformations = node->transformations;
+            glm::mat4 parentTransform = GetParentTransforms(node->GetParent(), framePos);
+            std::vector<glm::mat4> transformations = node->GetTransformations();
 
 
             glm::mat4 nodeTransform(1.0);

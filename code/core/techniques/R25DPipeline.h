@@ -18,12 +18,14 @@ namespace hpms
             LOG_DEBUG("Retro 2.5D pipeline module created.");
         }
 
-        void Init(Window* window, Scene* scene, Renderer* renderer) override
+        void Init(Window* window, Scene* scene, Renderer* renderer, FrameBuffer* frameBuffer) override
         {
+
 
             scene3DShader = PipelineUtils::Create3DSceneShader();
             pictureShader = PipelineUtils::CreatePictureShader();
             depthShader = PipelineUtils::CreateDepthShader();
+
 
             if (Picture* pic = scene->GetBackPicture())
             {
@@ -73,11 +75,23 @@ namespace hpms
 
             renderer->QuadMeshInit();
 
+            frameBuffer->Init();
+            float ratio = hpms::GetConf("PIXEL_RATIO", 1);
+
+            postFx = CGAPIManager::Instance().CreateNewPostFX(ratio);
+            fboShader = PipelineUtils::CreateFrameBufferShader(postFx);
+            frameBuffer->SetPostFx(postFx);
+            frameBuffer->SetFboShader(fboShader);
+
             LOG_DEBUG("Retro 2.5D pipeline initialized.");
         }
 
-        void Render(Window* window, Scene* scene, Camera* camera, Renderer* renderer) override
+        void Render(Window* window, Scene* scene, Camera* camera, Renderer* renderer, FrameBuffer* frameBuffer) override
         {
+            Param alpha;
+            alpha.f = scene->GetAlpha();
+            frameBuffer->SetParam(PARAM_GLOBAL_ALPHA, alpha);
+            frameBuffer->PreRendering();
             window->UpdateProjectionMatrix();
             renderer->ClearAllBuffers();
 
@@ -93,11 +107,14 @@ namespace hpms
             renderer->ClearDepthBuffer();
             PipelineUtils::RenderPictures(scene, pictureShader, renderer, true);
 
+
+            frameBuffer->PostRendering();
+
         }
 
-        void Cleanup(Scene* scene, Renderer* renderer) override
+        void Cleanup(Scene* scene, Renderer* renderer, FrameBuffer* frameBuffer) override
         {
-            // Cleanup is intended only for GPU resources (except shaders), not for physical data.
+            // Cleanup is intended only for GPU resources (except shaders and FX), not for physical data.
             hpms::CGAPIManager::Instance().FreeShaders();
 
             if (Picture* pic = scene->GetBackPicture())
@@ -144,6 +161,8 @@ namespace hpms
             }
 
             renderer->QuadMeshCleanup();
+            frameBuffer->Cleanup();
+            CGAPIManager::Instance().FreePostFX();
 
             LOG_DEBUG("Retro 2.5D pipeline cleanup done.");
         }
@@ -158,6 +177,8 @@ namespace hpms
         Shader* scene3DShader;
         Shader* pictureShader;
         Shader* depthShader;
+        Shader* fboShader;
+        PostFX* postFx;
 
     };
 

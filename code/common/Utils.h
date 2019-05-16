@@ -1,7 +1,6 @@
 /*!
  * File Utils.h
  *
- * Some useful utilities for safe memory, I/O management etc...
  */
 
 #pragma once
@@ -16,9 +15,12 @@
 #include "HPMSObject.h"
 
 
+
 #define LOG_ERROR(msg) hpms::ErrorHandler(__FILE__, __LINE__, msg)
 #define LOG_WARN(msg) hpms::MsgHandler("WARN ", msg)
 #define LOG_INFO(msg) hpms::MsgHandler("INFO ", msg)
+
+#define CONFIG_FILE "data/HPMS.cfg"
 
 #if !defined(_DEBUG) && !defined(NDEBUG)
 #define LOG_DEBUG(msg) hpms::MsgHandler("DEBUG", msg)
@@ -29,7 +31,15 @@
 
 namespace hpms
 {
+    // Some useful utilities for safe memory, I/O management etc...
+
     static std::unordered_map<std::string, size_t> gAllocationsMap;
+
+    template<typename T>
+    inline T GetConf(const std::string& key, T defaultValue)
+    {
+        return defaultValue;
+    }
 
     inline void ErrorHandler(const char* file, int line, const char* message)
     {

@@ -245,7 +245,7 @@ limitations under the License.
                 <rotate sid="rotateX">1 0 0 0</rotate>
                 <instance_light url="#light-lib"/>
             </node>
-            <node id="Floor" name="Floor">
+            <node id="Room" name="Room">
                 <rotate sid="rotateZ">0 0 1 0</rotate>
                 <rotate sid="rotateY">0 1 0 0</rotate>
                 <rotate sid="rotateX">1 0 0 0</rotate>

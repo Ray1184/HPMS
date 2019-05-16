@@ -877,14 +877,14 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 42746640, "Model::Floor", "Mesh" {
+	Model: 42746640, "Model::Room", "Mesh" {
 		Version: 232
 		Properties70:  {
 			P: "RotationActive", "bool", "", "",1
 			P: "InheritType", "enum", "", "",1
 			P: "ScalingMax", "Vector3D", "Vector", "",0,0,0
 			P: "DefaultAttributeIndex", "int", "Integer", "",0
-			P: "COLLADA_ID", "KString", "", "", "Floor"
+			P: "COLLADA_ID", "KString", "", "", "Room"
 		}
 		Shading: Y
 		Culling: "CullingOff"
@@ -989,7 +989,7 @@ Connections:  {
 	;Model::Light, Model::RootNode
 	C: "OO",41183376,0
 	
-	;Model::Floor, Model::RootNode
+	;Model::Room, Model::RootNode
 	C: "OO",42746640,0
 	
 	;Model::Collada, Model::RootNode
@@ -1010,10 +1010,10 @@ Connections:  {
 	;NodeAttribute::light, Model::Light
 	C: "OO",40862144,41183376
 	
-	;Material::Stone, Model::Floor
+	;Material::Stone, Model::Room
 	C: "OO",42748528,42746640
 	
-	;Geometry::floor, Model::Floor
+	;Geometry::floor, Model::Room
 	C: "OO",42748928,42746640
 	
 	;Material::RedPlastic, Model::Collada

@@ -143,10 +143,6 @@ namespace hpms
             Entity::animCurrentIndex = animCurrentIndex;
         }
 
-        inline unsigned int GetTypeId() const override
-        {
-            return OBJ_TYPE_ENTITY;
-        }
 
         inline const std::string Name() const override
         {

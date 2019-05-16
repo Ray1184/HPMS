@@ -2,12 +2,11 @@
 scene = {
     name = "Scene_01",
     version = "1.0.0",
-    data = "Scene_01.hdat",
     mode = "R25D",
     quit = false,
     setup = function(scene, camera)
         -- Init function callback.
-        e = hpms.make_entity('data/out/01.hdat')
+        e = hpms.make_entity('data/out/01.hmdat')
         b = hpms.make_background('data/resources/textures/B01_B.png')
         d = hpms.make_depth_mask('data/resources/textures/B01_D.png')
         e.position = hpms.vec3(0, 0, 0)

@@ -13,6 +13,5 @@ namespace hpms
     public:
         virtual bool IsVisible() const = 0;
 
-        virtual unsigned int GetTypeId() const = 0;
     };
 }
