@@ -10,6 +10,7 @@
 #include <algorithm>
 #include "AdvModelItem.h"
 #include "Mesh.h"
+#include "items/SceneNode.h"
 #include "items/Entity.h"
 #include "items/Picture.h"
 
@@ -23,34 +24,7 @@ namespace hpms
         Scene() : ambientLight(glm::vec3(1.0, 1.0, 1.0)), alpha(1.0)
         {}
 
-        inline void AddRenderObject(RenderObject* obj)
-        {
-
-            if (auto* entity = dynamic_cast<Entity*>(obj))
-            {
-
-                itemsMap[entity->GetModelItem()].push_back(entity);
-
-            }
-
-            if (auto* pic = dynamic_cast<Picture*>(obj))
-            {
-                if (pic->GetMode() == PictureMode::FOREGROUND)
-                {
-                    if (std::find(forePictures.begin(), forePictures.end(), pic) == forePictures.end())
-                    {
-                        forePictures.push_back(pic);
-                    }
-                } else if (pic->GetMode() == PictureMode::BACKGROUND)
-                {
-                    backPicture = pic;
-                } else if (pic->GetMode() == PictureMode::DEPTH_MASK)
-                {
-                    depthPicture = pic;
-                }
-            }
-
-        }
+        void AddRenderObject(RenderObject* obj);
 
         inline const glm::vec3& GetAmbientLight() const
         {
@@ -99,10 +73,18 @@ namespace hpms
             Scene::alpha = alpha;
         }
 
+        inline void UpdateNodes()
+        {
+            for (SceneNode* node : nodes) {
+                node->UpdateTree();
+            }
+        }
+
     private:
 
         std::unordered_map<const hpms::AdvModelItem*, std::vector<hpms::Entity*>> itemsMap;
         std::vector<Picture*> forePictures;
+        std::vector<SceneNode*> nodes;
         Picture* backPicture;
         Picture* depthPicture;
         glm::vec3 ambientLight;

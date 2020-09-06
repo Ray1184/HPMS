@@ -5,7 +5,8 @@
 #pragma once
 
 #include <pugixml.hpp>
-#include "../logic/Room.h"
+#include <utility>
+#include "../logic/RoomModelItem.h"
 #include "../common/Utils.h"
 
 namespace hpms
@@ -13,22 +14,51 @@ namespace hpms
     class RoomImporter
     {
     public:
-        static hpms::Room* LoadRoom(std::string& path);
+        static hpms::RoomModelItem* LoadRoom(std::string& path);
 
     private:
 
-        static void ProcessSectorGroups(std::vector<hpms::SectorGroup>& sectorGroups, pugi::xml_node& parent);
 
-        static void ProcessSectors(std::vector<hpms::Sector>& sectors, pugi::xml_node& parent);
+        static void ProcessSectors(std::vector<hpms::Sector>& sectors, std::string& path);
 
-        static void ProcessPerimetralSides(std::vector<hpms::Side>& sides, pugi::xml_node& parent);
+        static void ProcessPerimetralSides(std::vector<hpms::Sector>& vector);
 
-        static void ProcessTriggers(std::vector<hpms::Trigger>& triggers, pugi::xml_node& parent);
 
-        static void ProcessCalls(std::vector<hpms::Call>& calls, pugi::xml_node& parent);
+    };
 
-        static void ProcessCallParameters(std::vector<hpms::Param>& params, pugi::xml_node& parent);
+    class Face
+    {
+    public:
+        unsigned int indexA;
 
+        unsigned int indexB;
+
+        unsigned int indexC;
+
+        std::string lineRef;
+
+        Face(std::string  lineRef, const std::string& tokenX, const std::string& tokenY,
+             const std::string& tokenZ) :
+                lineRef(std::move(lineRef)),
+                indexA(ProcessIndex(tokenX) - 1),
+                indexB(ProcessIndex(tokenY) - 1),
+                indexC(ProcessIndex(tokenZ) - 1)
+        {
+
+        }
+
+    private:
+        static inline unsigned int ProcessIndex(const std::string& token)
+        {
+            int sIndex = token.find('/');
+            if (sIndex < 0)
+            {
+                return std::stoi(token);
+            } else
+            {
+                return std::stoi(token.substr(0, sIndex));
+            }
+        }
     };
 
 }

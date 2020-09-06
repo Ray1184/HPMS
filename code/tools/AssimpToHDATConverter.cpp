@@ -6,7 +6,7 @@
 #include <iostream>
 #include "AssimpImporter.h"
 #include "../common/FileSystem.h"
-#include "../core/ResourceCache.h"
+#include "../core/ResourceItemsCache.h"
 
 int Serialize(std::string& filename, std::string& texPath, std::string& outPath);
 

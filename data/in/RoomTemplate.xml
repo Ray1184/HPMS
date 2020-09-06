@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<room id="R01">
+    <sectorGroups size="1">
+        <sectorGroup id="G01">
+            <sectors size="3">
+                <sector id="S01" groupId="G01" x1="0.0" x2="0.0" x3="0.0" y1="0.5" y2="0.5" y3="0.5" z1="1.0" z2="1.0"
+                        z3="1.0">
+                    <perimetralSides size="2">
+                        <perimetralSide idx1="0" idx2="1"/>
+                        <perimetralSide idx1="1" idx2="2"/>
+                    </perimetralSides>
+                </sector>
+                <sector id="S02" groupId="G01" x1="0.0" x2="0.0" x3="0.0" y1="0.5" y2="0.5" y3="0.5" z1="1.0" z2="1.0"
+                        z3="1.0"/>
+                <sector id="S03" groupId="G01" x1="0.0" x2="0.0" x3="0.0" y1="0.5" y2="0.5" y3="0.5" z1="1.0" z2="1.0"
+                        z3="1.0"/>
+            </sectors>
+        </sectorGroup>
+    </sectorGroups>
+    <triggers size="2">
+        <trigger>
+            <conditions size="1">
+                <call functionName="entity_on_sector_group">
+                    <params size="2">
+                        <param sVal="PLAYER" type="0"/>
+                        <param sVal="G01" type="0"/>
+                    </params>
+                </call>
+            </conditions>
+            <actions size="1">
+                <call functionName="incr_decr_entity_param">
+                    <params size="3">
+                        <param sVal="PLAYER" type="0"/>
+                        <param sVal="HP" type="0"/>
+                        <param iVal="-1" type="1"/>
+                    </params>
+                </call>
+            </actions>
+        </trigger>
+    </triggers>
+</room>

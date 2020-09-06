@@ -1,26 +1,26 @@
 /*!
  * File Utils.h
- *
  */
 
 #pragma once
 
 #include <cstring>
 #include <string>
+#include <regex>
 #include <sstream>
 #include <cstdio>
 #include <fstream>
 #include <glm/ext.hpp>
 #include <unordered_map>
+#include <functional>
 #include "HPMSObject.h"
-
 
 
 #define LOG_ERROR(msg) hpms::ErrorHandler(__FILE__, __LINE__, msg)
 #define LOG_WARN(msg) hpms::MsgHandler("WARN ", msg)
 #define LOG_INFO(msg) hpms::MsgHandler("INFO ", msg)
 
-#define CONFIG_FILE "data/HPMS.cfg"
+#define CONFIG_FILE "data/HPMS.ini"
 
 #if !defined(_DEBUG) && !defined(NDEBUG)
 #define LOG_DEBUG(msg) hpms::MsgHandler("DEBUG", msg)
@@ -33,7 +33,16 @@ namespace hpms
 {
     // Some useful utilities for safe memory, I/O management etc...
 
-    static std::unordered_map<std::string, size_t> gAllocationsMap;
+    struct AllocCounter
+    {
+        static std::unordered_map<std::string, int> gAllocationsMap;
+    };
+
+    inline static AllocCounter& AllocCounterInstance()
+    {
+        static AllocCounter inst;
+        return inst;
+    } 
 
     template<typename T>
     inline T GetConf(const std::string& key, T defaultValue)
@@ -59,11 +68,16 @@ namespace hpms
 #if !defined(_DEBUG) && !defined(NDEBUG)
 
         std::string name = obj->Name();
-        if (gAllocationsMap.find(name) == gAllocationsMap.end())
+        if (AllocCounterInstance().gAllocationsMap.find(name) == AllocCounterInstance().gAllocationsMap.end())
         {
-            gAllocationsMap[name] = 0;
+            AllocCounterInstance().gAllocationsMap[name] = 0;
         }
-        gAllocationsMap[name]++;
+        AllocCounterInstance().gAllocationsMap[name]++;
+
+        std::stringstream ss;
+        ss << "Malloc " << name << " to " << AllocCounterInstance().gAllocationsMap[name];
+        LOG_DEBUG(ss.str().c_str());
+
 
 #endif
         return obj;
@@ -75,11 +89,11 @@ namespace hpms
         T* obj = new T[size];
 #if !defined(_DEBUG) && !defined(NDEBUG)
         std::string name = "ARRAY";
-        if (gAllocationsMap.find(name) == gAllocationsMap.end())
+        if (AllocCounterInstance().gAllocationsMap.find(name) == AllocCounterInstance().gAllocationsMap.end())
         {
-            gAllocationsMap[name] = 0;
+            AllocCounterInstance().gAllocationsMap[name] = 0;
         }
-        gAllocationsMap[name]++;
+        AllocCounterInstance().gAllocationsMap[name]++;
 #endif
         return obj;
     }
@@ -92,7 +106,11 @@ namespace hpms
 #if !defined(_DEBUG) && !defined(NDEBUG)
 
         std::string name = ptr->Name();
-        gAllocationsMap[name]--;
+        AllocCounterInstance().gAllocationsMap[name]--;
+
+        std::stringstream ss;
+        ss << "Dealloc " << name << " to " << AllocCounterInstance().gAllocationsMap[name];
+        LOG_DEBUG(ss.str().c_str());
 
 #endif
         delete ptr;
@@ -106,14 +124,31 @@ namespace hpms
 
 #if !defined(_DEBUG) && !defined(NDEBUG)
         std::string name = "ARRAY";
-        gAllocationsMap[name]--;
+        AllocCounterInstance().gAllocationsMap[name]--;
 #endif
         delete[] ptr;
         ptr = nullptr;
 
     }
 
-    inline std::string ReadFile(const std::string fileName)
+    inline void ProcessFileLines(const std::string& fileName, std::function<void(const std::string&)> callback)
+    {
+        std::ifstream file(fileName);
+        if (file)
+        {
+            for (std::string line; getline(file, line);)
+            {
+                callback(line);
+            }
+        } else
+        {
+            std::stringstream ss;
+            ss << "Cannot open/read file with name " << fileName;
+            LOG_ERROR(ss.str().c_str());
+        }
+    }
+
+    inline std::string ReadFile(const std::string& fileName)
     {
 
         std::ifstream file(fileName);
@@ -150,8 +185,8 @@ namespace hpms
     {
         static const char alphanum[] =
                 "0123456789"
-                        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                        "abcdefghijklmnopqrstuvwxyz";
+                "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                "abcdefghijklmnopqrstuvwxyz";
 
         for (int i = 0; i < len; ++i)
         {
@@ -159,6 +194,43 @@ namespace hpms
         }
 
         s[len] = 0;
+    }
+
+    inline std::vector<std::string> Split(const std::string& stringToSplit, const std::string& reg)
+    {
+        std::vector<std::string> elems;
+
+        std::regex rgx(reg);
+
+        std::sregex_token_iterator iter(stringToSplit.begin(), stringToSplit.end(), rgx, -1);
+        std::sregex_token_iterator end;
+
+        while (iter != end)
+        {
+            elems.push_back(*iter);
+            ++iter;
+        }
+
+        return elems;
+    }
+
+    inline std::string GetFileName(const std::string& s)
+    {
+
+        char sep = '/';
+#ifdef _WIN32
+        sep = '\\';
+#endif
+        size_t i = s.rfind(sep, s.length());
+        if (i != std::string::npos)
+        {
+            std::string filename = s.substr(i + 1, s.length() - i);
+            size_t lastindex = filename.find_last_of(".");
+            std::string rawname = filename.substr(0, lastindex);
+            return (rawname);
+        }
+
+        return ("");
     }
 
 }

@@ -2,7 +2,7 @@
  * File GLRenderer.cpp
  */
 #include "GLRenderer.h"
-#include "../ResourceCache.h"
+#include "../ResourceItemsCache.h"
 
 void hpms::GLRenderer::QuadMeshInit()
 {

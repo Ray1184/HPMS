@@ -14,8 +14,8 @@
 #include "../core/CGAPIManager.h"
 #include "GameState.h"
 #include "states/R25DGameState.h"
+#include "../logic/LogicItemsCache.h"
 
-#define CONFIG_SCRIPT "Config.lua"
 
 namespace hpms
 {
@@ -33,8 +33,8 @@ namespace hpms
         {
             vm = hpms::SafeNew<LuaVM>();
             renderer = CGAPIManager::Instance().CreateNewRenderer();
-            int width = hpms::GetConf("WND_WIDTH", 320);
-            int height = hpms::GetConf("WND_HEIGHT", 200);
+            int width = hpms::GetConf("WND_WIDTH", 1280);
+            int height = hpms::GetConf("WND_HEIGHT", 800);
             frameBuffer = CGAPIManager::Instance().CreateNewFrameBuffer(width, height);
         }
 
@@ -108,9 +108,10 @@ namespace hpms
             if (!clear)
             {
                 clear = true;
+                LogicItemsCache::Instance().FreeAll();
                 CGAPIManager::Instance().FreeFrameBuffer();
                 CGAPIManager::Instance().FreeRenderer();
-                ResourceCache::Instance().FreeAll();
+                ResourceItemsCache::Instance().FreeAll();
                 hpms::SafeDelete(vm);
 
             }

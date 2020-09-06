@@ -7,6 +7,8 @@
 #include "Window.h"
 #include "Scene.h"
 #include "Camera.h"
+#include "Renderer.h"
+#include "FrameBuffer.h"
 
 namespace hpms
 {

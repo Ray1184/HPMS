@@ -8,18 +8,14 @@ set(RT_SOURCE_FILES
         code/common/Utils.h
         code/common/FileSystem.h
         code/core/Material.h
-        code/core/Mesh.cpp
         code/core/Mesh.h
         code/core/Actor.h
-        code/core/StdModelItem.cpp
         code/core/StdModelItem.h
-        code/core/AdvModelItem.cpp
         code/core/AdvModelItem.h
-        code/core/Animation.cpp
         code/core/Animation.h
         code/core/Renderer.h
         code/core/Texture.h
-        code/core/ResourceCache.h
+        code/core/ResourceItemsCache.h
         code/common/FileSystem.cpp
         code/core/Transformation.h
         code/core/Camera.h
@@ -40,7 +36,7 @@ set(RT_SOURCE_FILES
         code/core/items/Entity.h
         code/core/RenderObject.h
         code/core/items/Picture.h
-        code/core/SceneNode.h
+        code/core/items/SceneNode.h
         code/core/FrustumCullingCalculator.h
         code/runtime/vm/LuaVM.h
         code/runtime/vm/LuaRegister.h
@@ -55,54 +51,46 @@ set(RT_SOURCE_FILES
         code/core/gl/GLFrameBuffer.h
         code/core/gl/fx/GLDefaultPostFX.h
         code/common/Debug.h
-        code/logic/Room.h
-        code/logic/CalcUtils.h)
+        code/logic/RoomModelItem.h
+        code/logic/CalcUtils.h code/logic/LogicItemsCache.h code/logic/SectorUtils.h code/logic/items/WalkMap.h code/logic/items/Collisor.h code/logic/items/Collisor.cpp code/core/items/SceneNode.cpp code/core/gl/GLWindow.cpp code/core/gl/GLShader.cpp code/core/techniques/R25DPipeline.cpp code/core/gl/GLFrameBuffer.cpp code/core/FrustumCullingCalculator.cpp code/core/PipelineUtils.cpp code/core/ResourceItemsCache.cpp code/core/Scene.cpp code/logic/SectorUtils.cpp code/logic/LogicItemsCache.cpp code/logic/CalcUtils.cpp code/common/Utils.cpp)
 
 set(ROOM_TOOLS_SOURCE_FILES
         thirdparty/GLAD/src/glad.c
         code/common/Utils.h
         code/common/FileSystem.h
         code/core/Material.h
-        code/core/Mesh.cpp
         code/core/Mesh.h
         code/core/Actor.h
-        code/core/StdModelItem.cpp
         code/core/StdModelItem.h
-        code/core/AdvModelItem.cpp
         code/core/AdvModelItem.h
-        code/core/Animation.cpp
         code/core/Animation.h
         code/core/Renderer.h
         code/core/Texture.h
-        code/core/ResourceCache.h
+        code/core/ResourceItemsCache.h
         code/common/FileSystem.cpp
         code/common/HPMSObject.h
-        code/logic/Room.h
+        code/logic/RoomModelItem.h
         code/logic/CalcUtils.h
         code/tools/RoomImporter.cpp
-        code/tools/RoomImporter.h)
+        code/tools/RoomImporter.h code/common/Utils.cpp)
 
 set(AI_TOOLS_SOURCE_FILES
         thirdparty/GLAD/src/glad.c
         code/common/Utils.h
         code/common/FileSystem.h
         code/core/Material.h
-        code/core/Mesh.cpp
         code/core/Mesh.h
         code/tools/AssimpImporter.cpp
         code/tools/AssimpImporter.h
         code/core/Actor.h
-        code/core/StdModelItem.cpp
         code/core/StdModelItem.h
-        code/core/AdvModelItem.cpp
         code/core/AdvModelItem.h
-        code/core/Animation.cpp
         code/core/Animation.h
         code/core/Renderer.h
         code/core/Texture.h
-        code/core/ResourceCache.h
+        code/core/ResourceItemsCache.h
         code/common/FileSystem.cpp
-        code/common/HPMSObject.h)
+        code/common/HPMSObject.h code/common/Utils.cpp)
 
 
 set(dir ${CMAKE_CURRENT_SOURCE_DIR})

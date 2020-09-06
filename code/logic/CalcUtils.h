@@ -5,37 +5,39 @@
 #pragma once
 
 #include <glm/vec2.hpp>
-#include "Room.h"
+#include "RoomModelItem.h"
 
 namespace hpms
 {
 
-    inline float CalcHeightOf2DPointInside3DSector(const Sector& sec, const glm::vec2& pos)
+    float CalcHeightOf2DPointInside3DSector(const Triangle& sec, const glm::vec2& pos);
+
+    bool Is2DPointInside3DSector(const Triangle& sec, const glm::vec2& pos, float tolerance = 0);
+
+    bool TestSidesOverlap(const hpms::Triangle& t, const hpms::Triangle& o, unsigned int side);
+
+    std::vector<hpms::Side>
+    CalculatePerimetralSides(const hpms::Triangle& t, const std::vector<hpms::Triangle>& triangles);
+
+    float
+    IntersectRayLineSegment(float originX, float originY, float dirX, float dirY, float aX, float aY, float bX,
+                            float bY);
+
+
+    inline float
+    IntersectRayLineSegment(const glm::vec3& origin, const glm::vec2& dir, const glm::vec2& a, const glm::vec2& b)
     {
-        float det = (sec.z2 - sec.z3) * (sec.x1 - sec.x3) + (sec.x3 - sec.x2) * (sec.z1 - sec.z3);
-        float l1 = ((sec.z2 - sec.z3) * (pos.x - sec.x3) + (sec.x3 - sec.x2) * (pos.y - sec.z3)) / det;
-        float l2 = ((sec.z3 - sec.z1) * (pos.x - sec.x3) + (sec.x1 - sec.x3) * (pos.y - sec.z3)) / det;
-        float l3 = 1.0f - l1 - l2;
-        return l1 * sec.y1 + l2 * sec.y2 + l3 * sec.y3;
+        return IntersectRayLineSegment(origin.x, origin.z, dir.x, dir.y, a.x, a.y, b.x, b.y);
     }
 
-    inline bool Is2DPointInside3DSector(const Sector& sec, const glm::vec2& pos)
+    inline glm::vec2 Perperndicular(const glm::vec2 origin)
     {
-        float dX = pos.x - sec.x3;
-        float dY = pos.y - sec.z3;
-        float dX21 = sec.x3 - sec.x2;
-        float dY12 = sec.z2 - sec.z3;
-        float d = dY12 * (sec.x1 - sec.x3) + dX21 * (sec.z1 - sec.z3);
-        float s = dY12 * dX + dX21 * dY;
-        float t = (sec.z3 - sec.z1) * dX + (sec.x1 - sec.x3) * dY;
-        bool inside;
-        if (d < 0)
-        {
-            inside = s <= 0 && t <= 0 && s + t >= d;
-        } else
-        {
-            inside = s >= 0 && t >= 0 && s + t <= d;
-        }
-        return inside;
+        return {origin.y, -origin.x};
     }
+
+
+
+
+
+
 }

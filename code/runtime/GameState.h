@@ -84,7 +84,7 @@ namespace hpms
         {
             LuaRef sceneFun = vm->GetGlobal("scene");
             LuaRef inputFunc = sceneFun["input"];
-            inputFunc(&events[0]);
+            inputFunc(&events);
         }
 
         bool Quit()

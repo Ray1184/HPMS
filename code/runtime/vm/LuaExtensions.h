@@ -6,11 +6,13 @@
 
 #include <glm/glm.hpp>
 #include <math.h>
+#include <algorithm>
 
 #include "../../core/items/Entity.h"
-#include "../../core/ResourceCache.h"
+#include "../../core/ResourceItemsCache.h"
 #include "../../core/Camera.h"
 #include "../../core/Scene.h"
+#include "../input/KeyEvent.h"
 
 namespace hpms
 {
@@ -21,9 +23,23 @@ namespace hpms
         return q1 * q2;
     }
 
+
+    glm::quat FromEuler(float xAngle, float yAngle, float zAngle)
+    {
+        return glm::quat(glm::vec3(xAngle, yAngle, zAngle));
+    }
+
     glm::quat FromAxisQuat(float angle, float xAxis, float yAxis, float zAxis)
     {
         return glm::angleAxis(angle, glm::vec3(xAxis, yAxis, zAxis));
+    }
+
+
+    glm::vec3 GetDirection(const glm::quat& rot, const glm::vec3& forward)
+    {
+        glm::mat3 rotMat = glm::mat3_cast(rot);
+        glm::vec3 dir = rotMat * forward;
+        return glm::normalize(dir);
     }
 
     float ToRadians(float degrees)
@@ -171,12 +187,24 @@ namespace hpms
 
     // STL utils.
 
+    // LUA Key handling.
+    bool KHKeyAction(const std::vector<hpms::KeyEvent>& events, const std::string& name, int action)
+    {
+        for (const auto& event : events)
+        {
+            if (name == event.key && action == event.inputType)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 
     // LUA Asset Manager.
     hpms::Entity* AMCreateEntity(const std::string& name)
     {
-        AdvModelItem* testModel = ResourceCache::Instance().GetModel(name);
-        hpms::Entity* e = hpms::SafeNew<hpms::Entity>(testModel);
+        AdvModelItem* testModel = ResourceItemsCache::Instance().GetModel(name);
+        auto* e = hpms::SafeNew<hpms::Entity>(testModel);
         return e;
     }
 
@@ -185,10 +213,27 @@ namespace hpms
         hpms::SafeDelete(entity);
     }
 
+    hpms::SceneNode* AMCreateNode(const std::string& name)
+    {
+        auto* n = hpms::SafeNew<hpms::SceneNode>(name);
+        return n;
+    }
+
+    void AMDeleteNode(SceneNode* node)
+    {
+        hpms::SafeDelete(node);
+    }
+
+    void AMDeleteNodeAndActors(SceneNode* node)
+    {
+        node->DeleteAllActors();
+        AMDeleteNode(node);
+    }
+
 
     hpms::Picture* AMCreateBackground(const std::string& path)
     {
-        hpms::Picture* p = hpms::SafeNew<hpms::Picture>(path, PictureMode::BACKGROUND);
+        auto* p = hpms::SafeNew<hpms::Picture>(path, PictureMode::BACKGROUND);
         return p;
     }
 
@@ -199,7 +244,7 @@ namespace hpms
 
     hpms::Picture* AMCreateForeground(const std::string& path)
     {
-        hpms::Picture* p = hpms::SafeNew<hpms::Picture>(path, PictureMode::FOREGROUND);
+        auto* p = hpms::SafeNew<hpms::Picture>(path, PictureMode::FOREGROUND);
         return p;
     }
 
@@ -210,7 +255,7 @@ namespace hpms
 
     hpms::Picture* AMCreateDepthMask(const std::string& path)
     {
-        hpms::Picture* p = hpms::SafeNew<hpms::Picture>(path, PictureMode::DEPTH_MASK);
+        auto* p = hpms::SafeNew<hpms::Picture>(path, PictureMode::DEPTH_MASK);
         return p;
     }
 
@@ -220,6 +265,16 @@ namespace hpms
     }
 
     void AMAddEntityToScene(Entity* obj, Scene* scene)
+    {
+        scene->AddRenderObject(obj);
+    }
+
+    void AMSetNodeEntity(SceneNode* node, Entity* obj)
+    {
+        node->SetActor(obj);
+    }
+
+    void AMAddNodeToScene(SceneNode* obj, Scene* scene)
     {
         scene->AddRenderObject(obj);
     }

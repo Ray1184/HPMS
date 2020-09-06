@@ -13,6 +13,7 @@
 #define SCREENS_FOLDER "data/resources/screens/"
 #define SHADERS_FOLDER "data/shaders/"
 #define SCRIPTS_FOLDER "data/scripts/"
+#define CONFIG_SCRIPT "Config.lua"
 #else
 #define MODELS_FOLDER "resources/models/"
 #define TEXTURE_FOLDER "resources/textures/"

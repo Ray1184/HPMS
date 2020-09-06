@@ -9,6 +9,10 @@
 #include <functional>
 #include "../common/HPMSObject.h"
 
+#define GLM_ENABLE_EXPERIMENTAL
+
+#include <glm/gtc/quaternion.hpp>
+
 namespace hpms
 {
 
@@ -30,6 +34,11 @@ namespace hpms
         virtual void SetScale(const glm::vec3& scale) = 0;
 
         virtual const glm::vec3& GetScale() const = 0;
+
+        virtual const glm::mat4& GetWorldTransform() const = 0;
+
+        virtual void SetWorldTransform(const glm::mat4& worldTransform) = 0;
+
 
     };
 }

@@ -23,6 +23,7 @@ namespace hpms
         glm::vec3 position;
         glm::vec3 scale;
         glm::quat rotation;
+        glm::mat4 localTransform;
         bool visible;
         unsigned int animCurrentFrameIndex;
         unsigned int animCurrentIndex;
@@ -39,7 +40,8 @@ namespace hpms
                    position(0.0, 0.0, 0.0),
                    scale(1.0, 1.0, 1.0),
                    visible(true),
-                   rotation(glm::angleAxis(0.0f, glm::vec3(0.0f, 1.0f, 0.0f)))
+                   rotation(glm::angleAxis(0.0f, glm::vec3(0.0f, 1.0f, 0.0f))),
+                   localTransform(glm::mat4(1.0))
         {}
 
         explicit Entity(AdvModelItem* modelItem) : animCurrentFrameIndex(0),
@@ -141,6 +143,16 @@ namespace hpms
         inline void SetAnimCurrentIndex(unsigned int animCurrentIndex)
         {
             Entity::animCurrentIndex = animCurrentIndex;
+        }
+
+        inline const glm::mat4& GetWorldTransform() const override
+        {
+            return localTransform;
+        }
+
+        inline void SetWorldTransform(const glm::mat4& localTransform) override
+        {
+            Entity::localTransform = localTransform;
         }
 
 

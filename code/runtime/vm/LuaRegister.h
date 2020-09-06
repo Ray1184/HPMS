@@ -9,6 +9,7 @@ extern "C" {
 #include "lua/lualib.h"
 }
 
+#include <vector>
 #include <LuaBridge/LuaBridge.h>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
@@ -26,12 +27,16 @@ namespace hpms
     {
     public:
 
+
         static void RegisterAssetManager(lua_State* state)
         {
             getGlobalNamespace(state)
                     .beginNamespace("hpms")
                     .addFunction("make_entity", &hpms::AMCreateEntity)
                     .addFunction("delete_entity", &hpms::AMDeleteEntity)
+                    .addFunction("make_node", &hpms::AMCreateNode)
+                    .addFunction("delete_node", &hpms::AMDeleteNode)
+                    .addFunction("delete_node_deep", &hpms::AMDeleteNodeAndActors)
                     .addFunction("make_background", &hpms::AMCreateBackground)
                     .addFunction("delete_background", &hpms::AMDeleteBackground)
                     .addFunction("make_picture", &hpms::AMCreateForeground)
@@ -39,6 +44,8 @@ namespace hpms
                     .addFunction("make_depth_mask", &hpms::AMCreateDepthMask)
                     .addFunction("delete_depth_mask", &hpms::AMDeleteDepthMask)
                     .addFunction("add_entity_to_scene", &hpms::AMAddEntityToScene)
+                    .addFunction("set_node_entity", &hpms::AMSetNodeEntity)
+                    .addFunction("add_node_to_scene", &hpms::AMAddNodeToScene)
                     .addFunction("add_picture_to_scene", &hpms::AMAddPictureToScene)
                     .endNamespace();
         }
@@ -57,6 +64,18 @@ namespace hpms
                     .addProperty("visible", &hpms::Entity::IsVisible, &hpms::Entity::SetVisible)
                     .addProperty("anim_loop", &hpms::Entity::IsAnimLoop, &hpms::Entity::SetAnimLoop)
                     .addProperty("anim_play", &hpms::Entity::IsAnimPlay, &hpms::Entity::SetAnimPlay)
+                    .endClass()
+                    .endNamespace();
+        }
+
+        static void RegisterNode(lua_State* state)
+        {
+            getGlobalNamespace(state)
+                    .beginNamespace("hpms")
+                    .beginClass<hpms::SceneNode>("node")
+                    .addProperty("position", &hpms::SceneNode::GetPosition, &hpms::SceneNode::SetPosition)
+                    .addProperty("scale", &hpms::SceneNode::GetScale, &hpms::SceneNode::SetScale)
+                    .addProperty("rotation", &hpms::SceneNode::GetRotation, &hpms::SceneNode::SetRotation)
                     .endClass()
                     .endNamespace();
         }
@@ -100,6 +119,8 @@ namespace hpms
                     .endClass()
                     .addFunction("quat_mul", &hpms::MulQuat)
                     .addFunction("from_axis", &hpms::FromAxisQuat)
+                    .addFunction("get_direction", &hpms::GetDirection)
+                    .addFunction("from_euler", &hpms::FromEuler)
                     .endNamespace();
 
         }
@@ -198,6 +219,16 @@ namespace hpms
                     .addData("key", &KeyEvent::key)
                     .addData("input_type", &KeyEvent::inputType)
                     .endClass()
+                    .endNamespace();
+        }
+
+        static void RegisterKeyList(lua_State* state)
+        {
+            getGlobalNamespace(state)
+                    .beginNamespace("hpms")
+                    .beginClass<std::vector<KeyEvent>>("key_list")
+                    .endClass()
+                    .addFunction("action_performed", &hpms::KHKeyAction)
                     .endNamespace();
         }
 
